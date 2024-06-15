@@ -1,0 +1,48 @@
+[gd_scene load_steps=4 format=3 uid="uid://cfr3hetdke0mq"]
+
+[ext_resource type="Script" path="res://Scenes/Placements/Beacon.gd" id="1_d4c0g"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1kma5"]
+bg_color = Color(0, 0, 0, 1)
+draw_center = false
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0, 0.596078, 0.596078, 1)
+border_blend = true
+corner_radius_top_left = 100
+corner_radius_top_right = 100
+corner_radius_bottom_right = 100
+corner_radius_bottom_left = 100
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_oijfg"]
+radius = 20.0
+
+[node name="Beacon" type="Area2D" groups=["Beacon"]]
+collision_layer = 129
+collision_mask = 65
+script = ExtResource("1_d4c0g")
+
+[node name="Panel2" type="Panel" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+theme_override_styles/panel = SubResource("StyleBoxFlat_1kma5")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_oijfg")
+
+[connection signal="area_entered" from="." to="." method="_on_area_entered"]
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]

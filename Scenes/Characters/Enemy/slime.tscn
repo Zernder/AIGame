@@ -1,0 +1,30 @@
+[gd_scene load_steps=3 format=3 uid="uid://cos8vnesyva5n"]
+
+[ext_resource type="PackedScene" uid="uid://j8vcvir0bsaj" path="res://Scenes/Characters/Enemy/EnemyBaseScene.tscn" id="1_3iy3e"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wq2m7"]
+bg_color = Color(0.960784, 0, 0, 1)
+corner_radius_top_left = 100
+corner_radius_top_right = 100
+corner_radius_bottom_right = 100
+corner_radius_bottom_left = 100
+
+[node name="Slime" groups=["Slime"] instance=ExtResource("1_3iy3e")]
+health = 60.0
+damage = 3.0
+speed = 30.0
+
+[node name="Body" parent="." index="0"]
+visible = false
+
+[node name="Panel" parent="." index="1"]
+theme_override_styles/panel = SubResource("StyleBoxFlat_wq2m7")
+
+[node name="Hitbox" parent="." index="3"]
+visible = false
+
+[node name="Hurtbox" parent="." index="4"]
+visible = false
+
+[node name="Detectbox" parent="." index="5"]
+visible = false
