@@ -110,7 +110,7 @@ texture = ExtResource("2_f4w1s")
 flip_h = true
 hframes = 19
 vframes = 12
-frame = 19
+frame = 22
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
@@ -155,8 +155,9 @@ autostart = true
 wait_time = 10.0
 autostart = true
 
-[node name="WanderTimer" type="Timer" parent="Timers"]
-one_shot = true
+[node name="QuadrantTimer" type="Timer" parent="Timers"]
+wait_time = 5.0
+autostart = true
 
 [node name="Hitbox" type="Area2D" parent="." groups=["AllyHitbox"]]
 visible = false
@@ -204,6 +205,7 @@ shape = SubResource("CircleShape2D_xnvwt")
 [node name="Beacons" type="Node" parent="."]
 
 [node name="UI" type="CanvasLayer" parent="."]
+visible = false
 
 [node name="Panel" type="Panel" parent="UI"]
 offset_left = 3.0
@@ -301,7 +303,7 @@ metadata/_edit_use_anchors_ = true
 [connection signal="timeout" from="Timers/StateTimeout" to="." method="StateTimeout"]
 [connection signal="timeout" from="Timers/PathTimeout" to="." method="MakePath"]
 [connection signal="timeout" from="Timers/Points" to="." method="PointsTimer"]
-[connection signal="timeout" from="Timers/WanderTimer" to="." method="WanderTimeout"]
+[connection signal="timeout" from="Timers/QuadrantTimer" to="." method="ExploreQuadrantTimer"]
 [connection signal="area_entered" from="Hitbox" to="." method="PlayerHit"]
 [connection signal="area_entered" from="Detectbox" to="." method="Detected"]
 [connection signal="area_exited" from="Detectbox" to="." method="NotDetected"]

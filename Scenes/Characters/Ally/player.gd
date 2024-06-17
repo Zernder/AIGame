@@ -48,6 +48,8 @@ func _ready():
 
 func _process(_delta):
 	UIProcess()
+	SeenCoords()
+	#print("Position: " + str(round(position / 16)))
 	#LevelUp()
 
 func _physics_process(delta):
@@ -63,7 +65,6 @@ func _physics_process(delta):
 	if collision:
 		Wander()
 		UpdateBlend()
-
 
 
 
@@ -120,7 +121,6 @@ func VoidBolt(value: bool):
 
 #endregion
 
-
 #region States
 
 
@@ -159,6 +159,13 @@ func Wander():
 		var wandertime = randf_range(1,3)
 		velocity = direction * speed
 		StateTimer.start(wandertime)
+
+
+var seencoords: Array = []
+func SeenCoords():
+	if !seencoords.has(round(position / 16)):
+		seencoords.append(round(position / 16))
+		print(seencoords)
 
 
 var enemycombat
