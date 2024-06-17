@@ -74,3 +74,14 @@ func Death():
 
 
 
+func Knockback(enemy, _area, reverse: bool = false):
+	var pushback = (enemy.global_position - global_position).normalized() * 30
+	if reverse:
+		pushback = -pushback
+	var KnockbackTween = create_tween()
+	if enemy.is_inside_tree() and enemy != null:
+		KnockbackTween.tween_property(enemy, "position", enemy.position + pushback, 0.2)
+
+
+func _on_hurtbox_area_entered(area):
+	Knockback($".", area)

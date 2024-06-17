@@ -1,0 +1,289 @@
+[gd_scene load_steps=19 format=3 uid="uid://cr05ix60wg2l6"]
+
+[ext_resource type="Script" path="res://Scenes/Characters/Ally/player.gd" id="1_jhb8c"]
+[ext_resource type="Texture2D" uid="uid://bfasimvh14i3l" path="res://Assets/AutumnSakilera/SpriteSheet.png" id="2_f4w1s"]
+[ext_resource type="AnimationLibrary" uid="uid://ckjnmb4saog51" path="res://Assets/AutumnSakilera/AnimPlayer.res" id="3_qyk17"]
+[ext_resource type="AnimationLibrary" uid="uid://dhbhcg4wost85" path="res://Assets/AutumnSakilera/global.res" id="4_nxm5q"]
+[ext_resource type="AnimationNodeStateMachine" uid="uid://dgefk6yecsrqf" path="res://Assets/AutumnSakilera/AnimTree.tres" id="5_ycquy"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_21t8d"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_qncwt"]
+radius = 18.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_b38hs"]
+radius = 20.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3dt1u"]
+size = Vector2(200, 200)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_xnvwt"]
+radius = 150.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_veutk"]
+bg_color = Color(0.403922, 0, 0.686275, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_y7g1y"]
+font_size = 30
+
+[sub_resource type="LabelSettings" id="LabelSettings_f24sn"]
+font_size = 20
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tj0s1"]
+draw_center = false
+border_width_left = 10
+border_width_top = 10
+border_width_right = 10
+border_width_bottom = 10
+border_color = Color(0, 0, 0.8, 1)
+border_blend = true
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="LabelSettings" id="LabelSettings_y56p3"]
+shadow_size = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5n81m"]
+bg_color = Color(0.741176, 0, 0, 1)
+draw_center = false
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.521569, 0, 0, 1)
+border_blend = true
+corner_radius_top_left = 30
+corner_radius_top_right = 30
+corner_radius_bottom_right = 30
+corner_radius_bottom_left = 30
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fk203"]
+bg_color = Color(1, 0, 0, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.898039, 0.00392157, 0, 1)
+border_blend = true
+corner_radius_top_left = 30
+corner_radius_top_right = 30
+corner_radius_bottom_right = 30
+corner_radius_bottom_left = 30
+corner_detail = 10
+shadow_size = 1
+
+[sub_resource type="LabelSettings" id="LabelSettings_l3v4b"]
+
+[node name="Player" type="CharacterBody2D" groups=["Ally", "Warrior"]]
+position = Vector2(0, -24)
+motion_mode = 1
+wall_min_slide_angle = 0.785398
+script = ExtResource("1_jhb8c")
+health = 100.0
+maxHealth = 100.0
+level = 1
+damage = 50.0
+speed = 40.0
+Points = 1000
+
+[node name="Body" type="CollisionShape2D" parent="."]
+position = Vector2(0, 10)
+shape = SubResource("CapsuleShape2D_21t8d")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_f4w1s")
+flip_h = true
+hframes = 19
+vframes = 12
+frame = 20
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"AnimPlayer": ExtResource("3_qyk17"),
+"global": ExtResource("4_nxm5q")
+}
+
+[node name="AnimationTree" type="AnimationTree" parent="."]
+libraries = {
+"AnimPlayer": ExtResource("3_qyk17"),
+"global": ExtResource("4_nxm5q")
+}
+tree_root = ExtResource("5_ycquy")
+anim_player = NodePath("../AnimationPlayer")
+parameters/conditions/Idle = false
+parameters/conditions/Run = false
+parameters/conditions/Throw = false
+parameters/conditions/VoidBolt = false
+parameters/conditions/Walking = false
+parameters/Idle/blend_position = Vector2(0, 0)
+parameters/Run/blend_position = Vector2(0, 0)
+parameters/Secondary/blend_position = Vector2(0, 0)
+parameters/VoidBolt/blend_position = Vector2(0, 0)
+parameters/Walking/blend_position = Vector2(0.9456, -0.642857)
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(2, 2)
+drag_horizontal_enabled = true
+drag_vertical_enabled = true
+
+[node name="Timers" type="Node" parent="."]
+
+[node name="StateTimeout" type="Timer" parent="Timers"]
+wait_time = 0.2
+autostart = true
+
+[node name="PathTimeout" type="Timer" parent="Timers"]
+wait_time = 0.5
+autostart = true
+
+[node name="Points" type="Timer" parent="Timers"]
+wait_time = 10.0
+autostart = true
+
+[node name="WanderTimer" type="Timer" parent="Timers"]
+one_shot = true
+
+[node name="Hitbox" type="Area2D" parent="." groups=["AllyHitbox"]]
+visible = false
+collision_layer = 16
+collision_mask = 32
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+position = Vector2(0, 6)
+shape = SubResource("CircleShape2D_qncwt")
+
+[node name="Hurtbox" type="Area2D" parent="."]
+visible = false
+collision_layer = 32
+collision_mask = 16
+monitoring = false
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+position = Vector2(0, 6)
+shape = SubResource("CircleShape2D_b38hs")
+
+[node name="Detectbox" type="Area2D" parent="." groups=["AllyDetectionBox"]]
+collision_layer = 2
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Detectbox"]
+shape = SubResource("RectangleShape2D_3dt1u")
+
+[node name="BeaconDetectbox" type="Area2D" parent="." groups=["AllyBeaconDetector"]]
+visible = false
+collision_layer = 64
+collision_mask = 128
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BeaconDetectbox"]
+shape = SubResource("CircleShape2D_xnvwt")
+
+[node name="Beacons" type="Node" parent="."]
+
+[node name="UI" type="CanvasLayer" parent="."]
+visible = false
+
+[node name="Panel" type="Panel" parent="UI"]
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 358.0
+offset_bottom = 116.0
+
+[node name="Points" type="Label" parent="UI/Panel"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 23.0
+grow_horizontal = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_veutk")
+text = "Beacons Left: 10"
+label_settings = SubResource("LabelSettings_y7g1y")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Directions" type="Label" parent="UI/Panel"]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.39823
+anchor_right = 0.997183
+anchor_bottom = 0.982301
+grow_horizontal = 2
+grow_vertical = 2
+label_settings = SubResource("LabelSettings_f24sn")
+metadata/_edit_use_anchors_ = true
+
+[node name="Profile" type="Panel" parent="UI"]
+z_index = 1
+custom_minimum_size = Vector2(0, 80)
+anchors_preset = -1
+anchor_top = 0.808333
+anchor_right = 0.28375
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_tj0s1")
+metadata/_edit_use_anchors_ = true
+
+[node name="LevelLabel" type="Label" parent="UI/Profile"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.0751211
+anchor_top = 0.0612245
+anchor_right = 0.330628
+anchor_bottom = 0.295918
+grow_horizontal = 2
+text = "Level: 1"
+label_settings = SubResource("LabelSettings_y56p3")
+horizontal_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="Healthbar" type="ProgressBar" parent="UI/Profile"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.0440529
+anchor_top = 0.330435
+anchor_right = 0.951542
+anchor_bottom = 0.521739
+theme_override_styles/background = SubResource("StyleBoxFlat_5n81m")
+theme_override_styles/fill = SubResource("StyleBoxFlat_fk203")
+value = 50.0
+show_percentage = false
+metadata/_edit_use_anchors_ = true
+
+[node name="healthlabel" type="Label" parent="UI/Profile/Healthbar"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 6.0
+offset_top = -0.5
+offset_right = 6.0
+offset_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "100/100"
+label_settings = SubResource("LabelSettings_l3v4b")
+horizontal_alignment = 1
+
+[node name="Expbar" type="ProgressBar" parent="UI/Profile"]
+modulate = Color(0.462745, 0, 0.462745, 1)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.0484582
+anchor_top = 0.626087
+anchor_right = 0.938326
+anchor_bottom = 0.808696
+show_percentage = false
+metadata/_edit_use_anchors_ = true
+
+[connection signal="timeout" from="Timers/StateTimeout" to="." method="StateTimeout"]
+[connection signal="timeout" from="Timers/PathTimeout" to="." method="MakePath"]
+[connection signal="timeout" from="Timers/Points" to="." method="PointsTimer"]
+[connection signal="timeout" from="Timers/WanderTimer" to="." method="WanderTimeout"]
+[connection signal="area_entered" from="Hitbox" to="." method="PlayerHit"]
+[connection signal="area_entered" from="Detectbox" to="." method="Detected"]
+[connection signal="area_exited" from="Detectbox" to="." method="NotDetected"]
+[connection signal="area_entered" from="BeaconDetectbox" to="." method="BeaconDetected"]
+[connection signal="area_exited" from="BeaconDetectbox" to="." method="BeaconLost"]

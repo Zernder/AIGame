@@ -1,1 +1,0 @@
-class_name WarriorClass extends CharacterBody2D

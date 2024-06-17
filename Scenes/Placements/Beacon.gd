@@ -8,7 +8,7 @@ var beaconPlacementTimer: Timer = Timer.new()
 var beaconCooldown: bool = false
 
 
-func _input(event):
+func _input(_event):
 	RemoveBeacon()
 
 

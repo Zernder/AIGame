@@ -20,6 +20,7 @@ corner_radius_bottom_left = 100
 radius = 20.0
 
 [node name="Beacon" type="Area2D" groups=["Beacon"]]
+scale = Vector2(0.3, 0.3)
 collision_layer = 129
 collision_mask = 65
 script = ExtResource("1_d4c0g")

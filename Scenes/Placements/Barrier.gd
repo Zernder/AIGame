@@ -7,7 +7,7 @@ var BarrierPlacementTimer: Timer = Timer.new()
 var BarrierCooldown: bool = false
 
 
-func _input(event):
+func _input(_event):
 	RemoveBarrier()
 
 

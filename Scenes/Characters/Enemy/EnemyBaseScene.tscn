@@ -50,7 +50,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_qoi8o")
 wait_time = 0.8
 autostart = true
 
-[node name="Hitbox" type="Area2D" parent="."]
+[node name="Hitbox" type="Area2D" parent="." groups=["EnemyHitbox"]]
 collision_layer = 16
 collision_mask = 32
 
@@ -74,5 +74,6 @@ shape = SubResource("CircleShape2D_ofrvu")
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
 
 [connection signal="timeout" from="Timers/StateTimeout" to="." method="_on_state_timeout_timeout"]
+[connection signal="area_entered" from="Hurtbox" to="." method="_on_hurtbox_area_entered"]
 [connection signal="area_entered" from="Detectbox" to="." method="_on_detectbox_area_entered"]
 [connection signal="area_exited" from="Detectbox" to="." method="_on_detectbox_area_exited"]
