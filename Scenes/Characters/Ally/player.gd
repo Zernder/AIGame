@@ -155,19 +155,11 @@ func StateMachine():
 var seencoords: Array = []
 
 func Wander():
-	if !DetectedArray.is_empty():
-		if is_in_group("Enemy"):
-			currentState = COMBAT
-			return
-		if is_in_group("Beacon"):
-			currentState = BEACON
-			return
-	else:
-		var max_distance = 100.0
-		var max_distance_tiles = int(max_distance / 16.0) 
+		var maxDistance = 100.0
+		var maxDistanceTiles = int(maxDistance / 16.0)
 		var potential_positions = []
-		for x_offset in range(-max_distance_tiles, max_distance_tiles + 1):
-			for y_offset in range(-max_distance_tiles, max_distance_tiles + 1):
+		for x_offset in range(-maxDistanceTiles, maxDistanceTiles + 1):
+			for y_offset in range(-maxDistanceTiles, maxDistanceTiles + 1):
 				var potential_pos = round(position / 16) + Vector2(x_offset, y_offset)
 				if !seencoords.has(potential_pos):
 					potential_positions.append(potential_pos)
@@ -359,3 +351,16 @@ func ItemDetection(area):
 
 func Seenreset():
 	seencoords = []
+
+
+func StateTimerTimeout():
+	if !DetectedArray.is_empty():
+		for i in DetectedArray:
+			if i.is_in_group("Enemy"):
+				currentState = COMBAT
+				return
+			if i.is_in_group("Beacon"):
+				currentState = BEACON
+				return
+	else:
+		currentState = WANDER

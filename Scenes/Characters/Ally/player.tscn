@@ -163,7 +163,7 @@ drag_vertical_enabled = true
 [node name="Timers" type="Node" parent="."]
 
 [node name="StateTimeout" type="Timer" parent="Timers"]
-wait_time = 0.2
+wait_time = 3.0
 autostart = true
 
 [node name="PathTimeout" type="Timer" parent="Timers"]
@@ -310,6 +310,7 @@ anchor_bottom = 0.808696
 show_percentage = false
 metadata/_edit_use_anchors_ = true
 
+[connection signal="timeout" from="Timers/StateTimeout" to="." method="StateTimerTimeout"]
 [connection signal="timeout" from="Timers/PathTimeout" to="." method="MakePath"]
 [connection signal="timeout" from="Timers/Points" to="." method="PointsTimer"]
 [connection signal="timeout" from="Timers/SeenTimer" to="." method="Seenreset"]
