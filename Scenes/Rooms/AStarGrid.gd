@@ -27,7 +27,6 @@ func SetupGrid():
 			var tiledata = get_cell_tile_data(0, tilepos)
 			if tiledata and tiledata.get_custom_data('Type') == "Wall":
 					astar.set_point_solid(tilepos)
-			var posgrid = tilepos / 16
 
 
 

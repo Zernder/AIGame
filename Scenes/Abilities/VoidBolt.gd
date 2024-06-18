@@ -2,7 +2,7 @@ extends Area2D
 
 @onready var VoidBolt = $"."
 @onready var spelltimeout = $SpellTimeout
-@onready var player = get_tree().get_first_node_in_group("Ally")
+@onready var player = get_tree().get_first_node_in_group("Player")
 
 var Direction
 var velocity = Vector2.RIGHT

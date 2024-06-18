@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://kc053xyxonb5"]
 
-[ext_resource type="Script" path="res://Scenes/Pickups/HealthPickup.gd" id="1_h7j0o"]
+[ext_resource type="Script" path="res://Scenes/Pickups/HealthPotion.gd" id="1_w8qo0"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_oijfg"]
 radius = 20.0998
@@ -12,8 +12,11 @@ corner_radius_top_right = 100
 corner_radius_bottom_right = 100
 corner_radius_bottom_left = 100
 
-[node name="Healthpickup" type="Area2D"]
-script = ExtResource("1_h7j0o")
+[node name="HealthPotion" type="Area2D" groups=["Pickup", "Potion"]]
+scale = Vector2(0.3, 0.3)
+collision_layer = 2
+collision_mask = 2
+script = ExtResource("1_w8qo0")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_oijfg")
@@ -32,4 +35,5 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_1kma5")
 
+[connection signal="area_entered" from="." to="." method="_on_area_entered"]
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]
