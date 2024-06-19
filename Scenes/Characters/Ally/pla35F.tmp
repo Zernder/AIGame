@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://cr05ix60wg2l6"]
+[gd_scene load_steps=18 format=3 uid="uid://cr05ix60wg2l6"]
 
 [ext_resource type="Script" path="res://Scenes/Characters/Ally/player.gd" id="1_jhb8c"]
 [ext_resource type="Texture2D" uid="uid://bfasimvh14i3l" path="res://Assets/AutumnSakilera/SpriteSheet.png" id="2_f4w1s"]
@@ -30,6 +30,9 @@ _data = {
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_qncwt"]
 radius = 18.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_b38hs"]
+radius = 20.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_nruef"]
 radius = 130.0
@@ -96,7 +99,6 @@ shadow_size = 1
 
 [node name="Player" type="CharacterBody2D" groups=["Player"]]
 position = Vector2(0, -24)
-scale = Vector2(0.5, 0.5)
 motion_mode = 1
 wall_min_slide_angle = 0.785398
 script = ExtResource("1_jhb8c")
@@ -104,7 +106,7 @@ health = 100.0
 maxHealth = 100.0
 level = 1
 damage = 50.0
-speed = 10.0
+speed = 40.0
 
 [node name="Body" type="CollisionShape2D" parent="."]
 position = Vector2(0, 10)
@@ -134,18 +136,17 @@ tree_root = ExtResource("5_ycquy")
 anim_player = NodePath("../AnimationPlayer")
 parameters/conditions/Combat = false
 parameters/conditions/Idle = false
-parameters/conditions/Reset = false
 parameters/conditions/VoidBolt = false
 parameters/conditions/Walking = false
 parameters/CombatStance/blend_position = Vector2(0, 0)
-parameters/Idle/blend_position = Vector2(-0.780193, 0.865639)
-parameters/Reset/blend_position = Vector2(0, 0)
+parameters/Idle/blend_position = Vector2(0, 0)
 parameters/VoidBolt/blend_position = Vector2(0, 0)
 parameters/Walking/blend_position = Vector2(0, -0.643)
 
 [node name="Camera2D" type="Camera2D" parent="."]
-zoom = Vector2(5, 5)
-limit_top = 3
+zoom = Vector2(1.5, 1.5)
+drag_horizontal_enabled = true
+drag_vertical_enabled = true
 
 [node name="Timers" type="Node" parent="."]
 
@@ -157,12 +158,24 @@ wait_time = 60.0
 autostart = true
 
 [node name="Hitbox" type="Area2D" parent="." groups=["AllyHitbox"]]
+visible = false
 collision_layer = 16
 collision_mask = 32
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
 position = Vector2(0, 6)
 shape = SubResource("CircleShape2D_qncwt")
+
+[node name="Hurtbox" type="Area2D" parent="."]
+visible = false
+collision_layer = 32
+collision_mask = 16
+monitoring = false
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+position = Vector2(0, 6)
+shape = SubResource("CircleShape2D_b38hs")
 
 [node name="Detectbox" type="Area2D" parent="." groups=["PlayerDetectionbox"]]
 collision_layer = 2
@@ -178,6 +191,8 @@ offset_top = -127.0
 offset_right = 128.0
 offset_bottom = 124.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_bi3mi")
+
+[node name="Beacons" type="Node" parent="."]
 
 [node name="UI" type="CanvasLayer" parent="." groups=["UI"]]
 
@@ -247,5 +262,6 @@ metadata/_edit_use_anchors_ = true
 
 [connection signal="timeout" from="Timers/StateTimeout" to="." method="StateMachine"]
 [connection signal="timeout" from="Timers/SeenTimer" to="." method="Seenreset"]
-[connection signal="area_entered" from="Hitbox" to="." method="TakeDamage"]
-[connection signal="area_entered" from="Detectbox" to="." method="EnemyDetected"]
+[connection signal="area_entered" from="Hitbox" to="." method="PlayerHit"]
+[connection signal="area_entered" from="Detectbox" to="." method="Detected"]
+[connection signal="area_exited" from="Detectbox" to="." method="NotDetected"]

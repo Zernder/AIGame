@@ -13,13 +13,14 @@ func _ready():
 	SetupGrid()
 
 
-
+var tilepos
+var tiledata
 func SetupGrid():
 	astar.region = maprect
 	astar.cell_size = tilesize
 	astar.default_compute_heuristic = AStarGrid2D.HEURISTIC_MANHATTAN
 	astar.default_estimate_heuristic = AStarGrid2D.HEURISTIC_MANHATTAN
-	astar.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER
+	astar.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_ALWAYS
 	astar.update()
 	for x in tilemapsize.x:
 		for y in tilemapsize.y:

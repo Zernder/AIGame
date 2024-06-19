@@ -10,10 +10,10 @@ corner_radius_bottom_right = 100
 corner_radius_bottom_left = 100
 
 [node name="Slime" groups=["Slime"] instance=ExtResource("1_3iy3e")]
-scale = Vector2(0.6, 0.6)
+scale = Vector2(0.2, 0.2)
 health = 60.0
 damage = 3.0
-speed = 30.0
+speed = 5.0
 
 [node name="Body" parent="." index="0"]
 visible = false

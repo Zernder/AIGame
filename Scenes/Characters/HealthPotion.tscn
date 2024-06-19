@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=3 uid="uid://kc053xyxonb5"]
+
+[ext_resource type="Script" path="res://Scenes/Pickups/HealthPotion.gd" id="1_2a1v4"]
+[ext_resource type="Texture2D" uid="uid://dcgkvmwrfbmc" path="res://Assets/Tilesets/2D Dungeon Asset Pack_v5.2/character and tileset/Dungeon_item_props_v2.png" id="2_htcsh"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_oijfg"]
+radius = 6.66667
+
+[node name="HealthPotion" type="Area2D" groups=["Pickup", "Potion"]]
+collision_layer = 3
+collision_mask = 3
+script = ExtResource("1_2a1v4")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_oijfg")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_htcsh")
+region_enabled = true
+region_rect = Rect2(144, 48, 16, 16)
+
+[connection signal="area_entered" from="." to="." method="_on_area_entered"]
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
