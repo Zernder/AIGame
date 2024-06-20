@@ -50,6 +50,14 @@ move={
 ]
 }
 
+[layer_names]
+
+2d_render/layer_1="Bodies"
+2d_physics/layer_1="Body"
+2d_physics/layer_2="Detection"
+2d_physics/layer_5="Hitbox"
+2d_physics/layer_6="Hurtbox"
+
 [rendering]
 
 textures/canvas_textures/default_texture_filter=0

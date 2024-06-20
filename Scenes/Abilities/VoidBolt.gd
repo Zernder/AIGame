@@ -2,7 +2,7 @@ extends Area2D
 
 @onready var VoidBolt = $"."
 @onready var spelltimeout = $SpellTimeout
-@onready var player = get_tree().get_first_node_in_group("Ally")
+@onready var player = get_tree().get_first_node_in_group("Player")
 
 var Direction
 var velocity = Vector2.RIGHT
@@ -22,11 +22,10 @@ func _physics_process(delta):
 func EnemyHit(area):
 	if area.is_in_group("EnemyHitbox"):
 		var enemy = area.get_parent()
-		print(enemy)
 		enemy.health -= player.damage
 		Knockback(enemy, area)
 		if enemy.health <= 0:
-			player.currentxp += 30
+			player.currentxp += 1
 			enemy.queue_free()
 		queue_free()
 	else:

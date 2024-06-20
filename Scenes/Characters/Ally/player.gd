@@ -1,4 +1,6 @@
-class_name AllyBaseScene extends CharacterBody2D
+class_name PlayerBaseScene extends CharacterBody2D
+
+#region The Variables
 
 
 @export var health: float
@@ -6,240 +8,237 @@ class_name AllyBaseScene extends CharacterBody2D
 @export var level: int
 @export var damage: float
 @export var speed: float
-@export var Points: int
 
 @onready var currentxp: int = 0
-@onready var requiredxp: int = 100 * level
-@onready var tile_map = $"../TileMap"
+@onready var requiredxp: int = 1 * level
+@onready var tilemap = $"../TileMap"
 
-#region UI Imports
+var direction: Vector2
+var DetectedArray: Array = []
+@onready var NavAgent = $NavigationAgent2D
 
-@onready var panel = $UI/Panel
-@onready var points = $UI/Panel/Points
-@onready var directions = $UI/Panel/Directions
-@onready var profile = $UI/Profile
-@onready var levellabel = $UI/Profile/LevelLabel
-@onready var healthbar = $UI/Profile/Healthbar
-@onready var healthlabel = $UI/Profile/Healthbar/healthlabel
-@onready var expbar = $UI/Profile/Expbar
-#@onready var navagent = $NavigationAgent2D
 
 #endregion
 
-var beacon
-var BeaconArray: Array = []
-var beaconinRange: bool = false
 
-var enemy
-var EnemyArray: Array = []
-var enemyinRange: bool = false
+#region The Runtimes
 
-var target
-var direction: Vector2 = Vector2()
-var currentState
-
-var agrid: AStarGrid2D
-var currentidpath: Array[Vector2i]
 
 func _ready():
-	currentState = WANDER
-	healthbar.max_value = maxHealth
+	currentState = IDLE
+	ChoosePlace()
+	StateMachine()
+	$UI/Profile/Healthbar.max_value = maxHealth
 	health = maxHealth
 
+
 func _process(_delta):
+	UsePotion()
 	UIProcess()
-	#LevelUp()
+	LevelUp()
 
 func _physics_process(delta):
 	Death()
-	Movement()
-	if velocity == Vector2.ZERO:
-		SetWalking(false)
-		UpdateBlend()
-	else:
-		SetWalking(true)
-		UpdateBlend()
 	var collision = move_and_collide(velocity * delta)
 	if collision:
-		Wander()
 		UpdateBlend()
-
-
-
+		Wander()
 
 
 func UIProcess():
-	healthbar.max_value = maxHealth
-	healthbar.value = health
-	healthlabel.text = str(health) + "/" + str(maxHealth)
-	expbar.value = currentxp
-	expbar.max_value = requiredxp
-	levellabel.text = "Level: " + str(level)
-	points.text = "Points: " + str(Points)
-	directions.text = "Place Beacon: 2 Points" + "\n" + "Remove Beacon: 1 Points"
+	$UI/Profile/Healthbar.max_value = maxHealth
+	$UI/Profile/Healthbar.value = health
+	$UI/Profile/Healthbar/healthlabel.text = str(health) + "/" + str(maxHealth)
+	$UI/Profile/Expbar.value = currentxp
+	$UI/Profile/Expbar.max_value = requiredxp
+	$UI/Profile/LevelLabel.text = "Level: " + str(level)
 
 
-
-func GrMovement():
-	var idpath = tile_map.astar.get_id_path(tile_map.local_to_map(global_position), tile_map.local_to_map(get_global_mouse_position())).slice(1)
-	
-	
-	if idpath.is_empty() == false:
-		currentidpath = idpath
-
-func Movement():
-	if currentidpath.is_empty():
-		return
-	
-	var targetposition = tile_map.map_to_local(currentidpath.front())
-	
-	global_position = global_position.move_toward(targetposition, 1)
-	
-	if global_position == targetposition:
-		currentidpath.pop_front()
+#endregion
 
 
 #region Animations
 
 
 @onready var AnimTree = $AnimationTree
-
-
-func UpdateBlend():
-	AnimTree["parameters/Idle/blend_position"] = direction
-	AnimTree["parameters/Walking/blend_position"] = direction
-	AnimTree["parameters/VoidBolt/blend_position"] = direction
-
+@onready var AnimPlayer = $AnimationPlayer
 
 func SetWalking(value):
 	AnimTree["parameters/conditions/Idle"] = not value
 	AnimTree["parameters/conditions/Walking"] = value
 
+
 func VoidBolt(value: bool):
 	AnimTree["parameters/conditions/VoidBolt"] = value
+	AnimTree["parameters/conditions/Reset"] = not value
+
+func CombatStance(value: bool):
+	AnimTree["parameters/conditions/Combat"] = value
+
+
+func UpdateBlend():
+	AnimTree["parameters/Idle/blend_position"] = direction
+	AnimTree["parameters/Walking/blend_position"] = direction
+	AnimTree["parameters/CombatStance/blend_position"] = direction
+	AnimTree["parameters/VoidBolt/blend_position"] = direction
+
 
 #endregion
 
 
-#region States
+#region StateMachine
 
 
 enum {
+	IDLE,
 	WANDER,
 	COMBAT,
 	BEACON,
+	PICKUP,
 }
 
-
-
+var currentState
+@onready var StateTimer = $Timers/StateTimeout
 func StateMachine():
 	match currentState:
+		IDLE:
+			print("Idle")
+			Idle()
 		WANDER:
+			print("Wander")
 			Wander()
 		COMBAT:
+			#print("Combat")
 			Combat()
-		BEACON:
-			Beacon()
+	if currentState == IDLE or currentState == WANDER:
+		CheckMovement()
+	if currentState == COMBAT:
+		Combat()
 
 
-func StateTimeout():
-	StateMachine()
+#endregion
 
-@onready var StateTimer = $Timers/StateTimeout
+
+#region Idle and Wander
+
+
+var idletime = randf_range(0.5, 1.5)
+var wandertime = randf_range(3, 6)
+@onready var nav_markers = $"../NavMarkers"
+var chosenmarker
+
+
+func CheckMovement():
+	var ChooseWalk = [WANDER, WANDER, WANDER, IDLE]
+	ChooseWalk.shuffle()
+	var Choice = ChooseWalk.front()
+	if Choice == IDLE:
+		currentState = IDLE
+	if Choice == WANDER:
+		currentState = WANDER
+
+
+func Idle():
+	velocity = Vector2.ZERO
+	SetWalking(false)
+	UpdateBlend()
+	StateTimer.start(idletime)
+
+
+func ChoosePlace():
+	var chosendirection = nav_markers.get_children()
+	chosendirection.shuffle()
+	chosenmarker = chosendirection.front()
+	NavAgent.target_position = chosenmarker.position
 
 func Wander():
-	if EnemyArray.is_empty() == false:
+	SetWalking(true)
+	UpdateBlend()
+	direction = to_local(NavAgent.get_next_path_position()).normalized()
+	UpdateBlend()
+	velocity = direction * speed
+	if NavAgent.is_navigation_finished():
+		ChoosePlace()
+	StateTimer.start(wandertime)
+
+
+#endregion
+
+
+#region Combat
+
+
+func EnemyDetected(area):
+	if area.get_parent().is_in_group("Enemy"):
+		var enemy = area.get_parent()
+		DetectedArray.append(enemy)
 		currentState = COMBAT
-	if BeaconArray.is_empty() == false:
-		currentState = BEACON
-	else:
-		var chooseDirection = [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN]
-		chooseDirection.shuffle()
-		direction = chooseDirection.front()
-		var wandertime = randf_range(1,3)
-		velocity = direction * speed
-		StateTimer.start(wandertime)
+		CombatStance(true)
+		StateMachine()
 
 
-var enemycombat
+var enemytarget
 func Combat():
-	var safe_distance = 10
-	for e in EnemyArray:
-		if e != null:
-			if e.is_in_group("Enemy"):
-				enemycombat = e.global_position
-				var distance_to_enemy = global_position.distance_to(enemycombat)
-				if distance_to_enemy < safe_distance:
-					var direction_away = (global_position - enemycombat).normalized()
-					var target_position = enemycombat + direction_away * safe_distance
-					currentidpath.append(target_position)
-					#velocity = target * speed
-				else:
+	for enemy in DetectedArray:
+		if enemy != null:
+			if enemy.is_in_group("Enemy"):
+					enemytarget = enemy
+					NavAgent.target_position = enemytarget.position
+					direction = to_local(NavAgent.get_next_path_position()).normalized()
+					if enemytarget.health <= 0:
+						enemytarget = null
 					velocity = Vector2.ZERO
-				VoidBolt(true)
+					VoidBolt(true)
+
 
 const VOID_BOLT = preload("res://Scenes/Abilities/VoidBolt.tscn")
 func FireVoidBolt():
-	velocity = Vector2.ZERO
-	VoidBolt(true)
 	var vbolt = VOID_BOLT.instantiate()
-	add_child(vbolt)
-	vbolt.global_position = $".".global_position
-	var direction_to_enemy = (enemycombat - global_position).normalized()
-	vbolt.velocity = direction_to_enemy * vbolt.speed
+	if enemytarget == null:
+		velocity = Vector2.ZERO
+		VoidBolt(false)
+		currentState = IDLE
+		SetWalking(true)
+		velocity = Vector2.ZERO
+	if enemytarget != null:
+		direction = enemytarget.position
+		StateTimer.start(3)
+		UpdateBlend()
+		add_child(vbolt)
+		vbolt.global_position = $".".global_position
+		var enemydirection = (enemytarget.global_position - global_position).normalized()
+		vbolt.velocity = enemydirection * vbolt.speed
+		direction = enemytarget.position
 
 
-func Beacon(): 
-	for b in BeaconArray:
-		if b.is_in_group("Beacon"):
-			var BPosition = Vector2i(b.position)
-			var idpath = tile_map.astar.get_id_path(tile_map.local_to_map(global_position), tile_map.local_to_map(b.position)).slice(1)
-			if idpath.is_empty() == false:
-				currentidpath = idpath
+func TakeDamage(area):
+	if area.get_parent().is_in_group("Enemy"):
+		var enemy = area.get_parent()
+		health -= enemy.damage
+		Knockback(enemy, area)
+
 
 #endregion
 
-#region Boxes and Timeouts
 
-func PointsTimer():
-	Points += 1
+#region Items
 
-func Detected(area):
-	if area.get_parent().is_in_group("Enemy"):
-		@warning_ignore("shadowed_variable")
-		var enemy = area.get_parent()
-		EnemyArray.append(enemy)
-		enemyinRange = true
-		target = enemy
-		currentState = COMBAT
+var item
+func ItemDetection(area):
+	if area.is_in_group("Pickup"):
+		item = area
+		currentState = PICKUP
 
-func NotDetected(area):
-	if area.get_parent().is_in_group("Enemy"):
-		@warning_ignore("shadowed_variable")
-		var enemy = area.get_parent()
-		EnemyArray.erase(enemy)
-		currentState = WANDER
-
-func PlayerHit(area):
-	if area.get_parent().is_in_group("Enemy"):
-		target = area.get_parent()
-		health -= target.damage
-		Knockback(target, area)
-	elif area.is_in_group("Blocks"):
-		Knockback(target, area)
-
-func BeaconDetected(area):
-	if area.is_in_group("Beacon"):
-		BeaconArray.append(area)
-		currentState = BEACON
-		print("Beacon")
-
-func BeaconLost(area):
-	if area.is_in_group("Beacon"):
-		BeaconArray.erase(area)
-		currentState = WANDER
+var PotionNearby: bool = false
+var healthpotions: int = 5
+func UsePotion():
+	if health <= (maxHealth / 2) and healthpotions >= 1:
+		healthpotions -= 1
+		health = maxHealth
+		print("Used Potion!")
 
 #endregion
+
 
 #region other
 
@@ -252,18 +251,32 @@ func LevelUp():
 		requiredxp = 100 * level
 		currentxp = 0
 
-@warning_ignore("shadowed_variable")
-func Knockback(enemy, _area, reverse: bool = false):
-	var pushback = (enemy.global_position - global_position).normalized() * 30
+func Knockback(target, _area, reverse: bool = false):
+	var pushback = (target.global_position - global_position).normalized() * 30
 	if reverse:
 		pushback = -pushback
 	var KnockbackTween = create_tween()
-	if enemy.is_inside_tree() and enemy != null:
-		KnockbackTween.tween_property(enemy, "position", enemy.position + pushback, 0.2)
+	if target.is_inside_tree() and target != null:
+		KnockbackTween.tween_property(target, "position", target.position + pushback, 0.2)
 
 func Death():
 	if health <= 0:
 		get_tree().quit()
 
 #endregion
+
+
+#func test():
+	#for x in tilemap.tilemapsize.x:
+		#for y in tilemap.tilemapsize.y:
+			#var tilepos = Vector2i(x, y)
+			#var tiledata = tilemap.get_cell_tile_data(0, tilepos)
+			#if tilemap.tiledata and tilemap.tiledata.get_custom_data('Type') == "Potion":
+				#print("part working")
+				#if detectbox.get_overlapping_areas():
+					#print("Found Potion")
+					
+
+
+
 

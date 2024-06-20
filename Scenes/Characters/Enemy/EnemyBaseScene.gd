@@ -44,7 +44,7 @@ func _on_state_timeout_timeout():
 func Attack():
 	if currentState == States.COMBAT and enemyinRange == true:
 		for i in Entity:
-			if i.is_in_group("Ally"):
+			if i.is_in_group("Player"):
 				var target = i.global_position
 				velocity = (target - global_position).normalized() * speed
 				if global_position.distance_to(target) <= 10:
@@ -53,7 +53,7 @@ func Attack():
 
 func _on_detectbox_area_entered(area):
 	var character = area.get_parent()
-	if character.is_in_group("Ally"):
+	if character.is_in_group("Player"):
 		Entity.append(character)
 		enemyinRange = true
 		currentState = States.COMBAT
@@ -61,7 +61,7 @@ func _on_detectbox_area_entered(area):
 
 func _on_detectbox_area_exited(area):
 	var character = area.get_parent()
-	if character.is_in_group("Ally"):
+	if character.is_in_group("Player"):
 		Entity.erase(character)
 		enemyinRange = Entity.size() > 0 and Entity.any(func(e): return e.is_in_group("Warrior"))
 		if Entity.is_empty():
