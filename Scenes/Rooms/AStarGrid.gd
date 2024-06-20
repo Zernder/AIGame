@@ -26,8 +26,10 @@ func SetupGrid():
 		for y in tilemapsize.y:
 			var tilepos = Vector2i(x, y)
 			var tiledata = get_cell_tile_data(0, tilepos)
+			var tiledata1 = get_cell_tile_data(1, tilepos)
 			if tiledata and tiledata.get_custom_data('Type') == "Wall":
 					astar.set_point_solid(tilepos)
-
+			if tiledata1 and tiledata1.get_custom_data('Type') == "Wall":
+					astar.set_point_solid(tilepos)
 
 

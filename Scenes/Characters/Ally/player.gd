@@ -10,13 +10,12 @@ class_name PlayerBaseScene extends CharacterBody2D
 @export var speed: float
 
 @onready var currentxp: int = 0
-@onready var requiredxp: int = 100 * level
+@onready var requiredxp: int = 1 * level
 @onready var tilemap = $"../TileMap"
 
 var direction: Vector2
-var agrid: AStarGrid2D
-var currentidpath: Array[Vector2i]
 var DetectedArray: Array = []
+@onready var NavAgent = $NavigationAgent2D
 
 
 #endregion
@@ -34,16 +33,14 @@ func _ready():
 func _process(_delta):
 	UsePotion()
 	UIProcess()
-	SeenCoords()
-	#LevelUp()
+	LevelUp()
 
 func _physics_process(delta):
 	Death()
-	Movement()
 	var collision = move_and_collide(velocity * delta)
 	if collision:
-		Wander()
 		UpdateBlend()
+		Wander()
 
 
 func UIProcess():
@@ -58,23 +55,7 @@ func UIProcess():
 #endregion
 
 
-func GrMovement():
-	var idpath = tilemap.astar.get_id_path(tilemap.local_to_map(global_position), tilemap.local_to_map(get_global_mouse_position())).slice(1)
-	
-	
-	if idpath.is_empty() == false:
-		currentidpath = idpath
 
-func Movement():
-	if currentidpath.is_empty():
-		return
-	
-	var targetposition = tilemap.map_to_local(currentidpath.front())
-	
-	global_position = global_position.move_toward(targetposition, 1)
-	
-	if global_position == targetposition:
-		currentidpath.pop_front()
 
 
 #region Animations
@@ -122,10 +103,10 @@ var currentState
 func StateMachine():
 	match currentState:
 		IDLE:
-			#print("Idle")
+			print("Idle")
 			Idle()
 		WANDER:
-			#print("Wander")
+			print("Wander")
 			Wander()
 		COMBAT:
 			#print("Combat")
@@ -139,14 +120,28 @@ func StateMachine():
 #endregion
 
 
-#region Idle and Wander
+#func MouseMovement():
+	#if Input.is_action_just_pressed("move"):
+		#var idpath = tilemap.astar.get_id_path(tilemap.local_to_map(global_position), tilemap.local_to_map(get_global_mouse_position())).slice(1)
+		#if idpath.is_empty() == false:
+			#currentidpath = idpath
 
+
+#func GridMovement():
+	#if currentidpath.is_empty():
+		#return
+	#var targetposition = tilemap.map_to_local(currentidpath.front())
+	#global_position = global_position.move_toward(targetposition, 1)
+	#if global_position == targetposition:
+		#currentidpath.pop_front()
+
+
+#region Idle and Wander
 
 var wandertime = randf_range(1, 3)
 
 func CheckMovement():
-	var ChooseWalk = [WANDER,IDLE]
-
+	var ChooseWalk = [WANDER, WANDER, WANDER, IDLE]
 	ChooseWalk.shuffle()
 	var Choice = ChooseWalk.front()
 	if Choice == IDLE:
@@ -161,70 +156,33 @@ func Idle():
 	UpdateBlend()
 	StateTimer.start(wandertime)
 
-
-var seencoords: Array = []
-func Seenreset():
-	seencoords = []
+@onready var nav_markers = $"../NavMarkers"
 
 func Wander():
-	var maxDistance = 1000.0
-	var maxDistanceTiles = int(maxDistance / 16.0)
-	var potential_positions = []
-	for x_offset in range(-maxDistanceTiles, maxDistanceTiles + 1):
-		for y_offset in range(-maxDistanceTiles, maxDistanceTiles + 1):
-			var potential_pos = round(position / 16) + Vector2(x_offset, y_offset)
-			if !seencoords.has(potential_pos):
-				potential_positions.append(potential_pos)
-	if potential_positions.size() > 0:
-		potential_positions.shuffle()
-		var new_position = potential_positions.front() * 16
-		direction = (new_position - position).normalized()
-		SetWalking(true)
-		UpdateBlend()
-		velocity = direction * speed
-		UpdateSeenCoords(new_position)
-		StateTimer.start(wandertime)
-	else:
-		var chooseDirection = [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN]
-		chooseDirection.shuffle()
-		direction = chooseDirection.front()
-		velocity = direction * speed
-		UpdateSeenCoords(position + direction * 16)
-		StateTimer.start(wandertime)
+	var chosendirection: Array = nav_markers.get_children()
+	print(chosendirection)
+	chosendirection.shuffle()
+	var chosen_marker: Node2D = chosendirection.front()
+	NavAgent.target_position += chosen_marker.global_position
+	SetWalking(true)
+	UpdateBlend()
+	#var direction =  to_local(NavAgent.get_next_path_position()).normalized()
+	velocity = direction * speed
+	StateTimer.start(wandertime)
 
-func SeenCoords():
-	var current_tile = round(position / 16)
-	if !seencoords.has(current_tile):
-		seencoords.append(current_tile)
-	update_vision_cone()
 
-func UpdateSeenCoords(pos):
-	var new_tile = round(pos / 16)
-	if !seencoords.has(new_tile):
-		seencoords.append(new_tile)
-	var area_position = pos + direction * 16
-	var area_tile = round(area_position / 16)
-	if !seencoords.has(area_tile):
-		seencoords.append(area_tile)
-	update_vision_cone()
+func MakePath():
+	pass
 
-func update_vision_cone():
-	var vision_distance = 100.0
-	var angle = 60.0
-	var vision_distance_tiles = int(vision_distance / 16.0)
-	var forward_dir = direction.normalized()
-	var right_dir = forward_dir.rotated(deg_to_rad(angle / 2))
-	var left_dir = forward_dir.rotated(deg_to_rad(-angle / 2))
-
-	for d in range(vision_distance_tiles):
-		var dist = d * 16.0
-		for offset in range(-d, d + 1):
-			var right_pos = round(position / 16 + right_dir * dist + right_dir.orthogonal() * offset)
-			var left_pos = round(position / 16 + left_dir * dist + left_dir.orthogonal() * offset)
-			if !seencoords.has(right_pos):
-				seencoords.append(right_pos)
-			if !seencoords.has(left_pos):
-				seencoords.append(left_pos)
+#func SeenCoords():
+	#var current_tile = round(position / 16)
+	#if !seencoords.has(current_tile):
+		#seencoords.append(current_tile)
+#
+#
+#var seencoords: Array = []
+#func Seenreset():
+	#seencoords = []
 
 #endregion
 
@@ -244,13 +202,14 @@ func EnemyDetected(area):
 var enemytarget
 func Combat():
 	for enemy in DetectedArray:
-		if enemy.is_in_group("Enemy"):
-				enemytarget = enemy
-				direction = enemytarget.position
-				if enemytarget.health <= 0:
-					enemytarget = null
-				velocity = Vector2.ZERO
-				VoidBolt(true)
+		if enemy != null:
+			if enemy.is_in_group("Enemy"):
+					enemytarget = enemy
+					direction = enemytarget.position
+					if enemytarget.health <= 0:
+						enemytarget = null
+					velocity = Vector2.ZERO
+					VoidBolt(true)
 
 
 const VOID_BOLT = preload("res://Scenes/Abilities/VoidBolt.tscn")
@@ -338,4 +297,7 @@ func Death():
 				#if detectbox.get_overlapping_areas():
 					#print("Found Potion")
 					
+
+
+
 

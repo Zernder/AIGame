@@ -26,7 +26,7 @@ func EnemyHit(area):
 		enemy.health -= player.damage
 		Knockback(enemy, area)
 		if enemy.health <= 0:
-			player.currentxp += 30
+			player.currentxp += 1
 			enemy.queue_free()
 		queue_free()
 	else:

@@ -1,10 +1,11 @@
-[gd_scene load_steps=17 format=3 uid="uid://cr05ix60wg2l6"]
+[gd_scene load_steps=18 format=3 uid="uid://cr05ix60wg2l6"]
 
 [ext_resource type="Script" path="res://Scenes/Characters/Ally/player.gd" id="1_jhb8c"]
 [ext_resource type="Texture2D" uid="uid://bfasimvh14i3l" path="res://Assets/AutumnSakilera/SpriteSheet.png" id="2_f4w1s"]
 [ext_resource type="AnimationLibrary" uid="uid://ckjnmb4saog51" path="res://Assets/AutumnSakilera/AnimPlayer.res" id="3_qyk17"]
 [ext_resource type="AnimationLibrary" uid="uid://dhbhcg4wost85" path="res://Assets/AutumnSakilera/global.res" id="4_nxm5q"]
 [ext_resource type="AnimationNodeStateMachine" uid="uid://dgefk6yecsrqf" path="res://Assets/AutumnSakilera/AnimTree.tres" id="5_ycquy"]
+[ext_resource type="PackedScene" uid="uid://cdy8alpm5swub" path="res://contextRaycast.tscn" id="6_lm4eq"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_21t8d"]
 
@@ -98,7 +99,7 @@ shadow_size = 1
 position = Vector2(0, -24)
 scale = Vector2(0.5, 0.5)
 motion_mode = 1
-wall_min_slide_angle = 0.785398
+wall_min_slide_angle = 0.0
 script = ExtResource("1_jhb8c")
 health = 100.0
 maxHealth = 100.0
@@ -244,6 +245,11 @@ anchor_right = 0.938326
 anchor_bottom = 0.808696
 show_percentage = false
 metadata/_edit_use_anchors_ = true
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+
+[node name="contextmap" parent="." instance=ExtResource("6_lm4eq")]
+position = Vector2(0, 6)
 
 [connection signal="timeout" from="Timers/StateTimeout" to="." method="StateMachine"]
 [connection signal="timeout" from="Timers/SeenTimer" to="." method="Seenreset"]
