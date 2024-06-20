@@ -1,7 +1,7 @@
 [gd_scene load_steps=16 format=3 uid="uid://dhgy8bxkkc35h"]
 
 [ext_resource type="Texture2D" uid="uid://bm8kiq6r2ukap" path="res://Assets/Tilesets/2D Dungeon Asset Pack_v5.2/items_animation/gate.png" id="1_jjtq1"]
-[ext_resource type="Script" path="res://Gate.gd" id="1_yuo8k"]
+[ext_resource type="Script" path="res://Scenes/Rooms/Gate.gd" id="1_yuo8k"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_wqwjt"]
 atlas = ExtResource("1_jjtq1")

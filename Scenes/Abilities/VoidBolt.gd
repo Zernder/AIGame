@@ -22,7 +22,6 @@ func _physics_process(delta):
 func EnemyHit(area):
 	if area.is_in_group("EnemyHitbox"):
 		var enemy = area.get_parent()
-		print(enemy)
 		enemy.health -= player.damage
 		Knockback(enemy, area)
 		if enemy.health <= 0:

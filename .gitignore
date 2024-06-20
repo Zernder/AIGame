@@ -4,3 +4,4 @@
 *.tmp
 /android
 /android
+*.keystore

@@ -26,9 +26,11 @@ var DetectedArray: Array = []
 
 func _ready():
 	currentState = IDLE
+	ChoosePlace()
 	StateMachine()
 	$UI/Profile/Healthbar.max_value = maxHealth
 	health = maxHealth
+
 
 func _process(_delta):
 	UsePotion()
@@ -53,9 +55,6 @@ func UIProcess():
 
 
 #endregion
-
-
-
 
 
 #region Animations
@@ -120,25 +119,14 @@ func StateMachine():
 #endregion
 
 
-#func MouseMovement():
-	#if Input.is_action_just_pressed("move"):
-		#var idpath = tilemap.astar.get_id_path(tilemap.local_to_map(global_position), tilemap.local_to_map(get_global_mouse_position())).slice(1)
-		#if idpath.is_empty() == false:
-			#currentidpath = idpath
-
-
-#func GridMovement():
-	#if currentidpath.is_empty():
-		#return
-	#var targetposition = tilemap.map_to_local(currentidpath.front())
-	#global_position = global_position.move_toward(targetposition, 1)
-	#if global_position == targetposition:
-		#currentidpath.pop_front()
-
-
 #region Idle and Wander
 
-var wandertime = randf_range(1, 3)
+
+var idletime = randf_range(0.5, 1.5)
+var wandertime = randf_range(3, 6)
+@onready var nav_markers = $"../NavMarkers"
+var chosenmarker
+
 
 func CheckMovement():
 	var ChooseWalk = [WANDER, WANDER, WANDER, IDLE]
@@ -154,35 +142,25 @@ func Idle():
 	velocity = Vector2.ZERO
 	SetWalking(false)
 	UpdateBlend()
-	StateTimer.start(wandertime)
+	StateTimer.start(idletime)
 
-@onready var nav_markers = $"../NavMarkers"
+
+func ChoosePlace():
+	var chosendirection = nav_markers.get_children()
+	chosendirection.shuffle()
+	chosenmarker = chosendirection.front()
+	NavAgent.target_position = chosenmarker.position
 
 func Wander():
-	var chosendirection: Array = nav_markers.get_children()
-	print(chosendirection)
-	chosendirection.shuffle()
-	var chosen_marker: Node2D = chosendirection.front()
-	NavAgent.target_position += chosen_marker.global_position
 	SetWalking(true)
 	UpdateBlend()
-	#var direction =  to_local(NavAgent.get_next_path_position()).normalized()
+	direction = to_local(NavAgent.get_next_path_position()).normalized()
+	UpdateBlend()
 	velocity = direction * speed
+	if NavAgent.is_navigation_finished():
+		ChoosePlace()
 	StateTimer.start(wandertime)
 
-
-func MakePath():
-	pass
-
-#func SeenCoords():
-	#var current_tile = round(position / 16)
-	#if !seencoords.has(current_tile):
-		#seencoords.append(current_tile)
-#
-#
-#var seencoords: Array = []
-#func Seenreset():
-	#seencoords = []
 
 #endregion
 
@@ -205,7 +183,8 @@ func Combat():
 		if enemy != null:
 			if enemy.is_in_group("Enemy"):
 					enemytarget = enemy
-					direction = enemytarget.position
+					NavAgent.target_position = enemytarget.position
+					direction = to_local(NavAgent.get_next_path_position()).normalized()
 					if enemytarget.health <= 0:
 						enemytarget = null
 					velocity = Vector2.ZERO
