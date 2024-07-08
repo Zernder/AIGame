@@ -1,11 +1,11 @@
-[gd_scene load_steps=18 format=3 uid="uid://cr05ix60wg2l6"]
+[gd_scene load_steps=19 format=3 uid="uid://cr05ix60wg2l6"]
 
 [ext_resource type="Script" path="res://Scenes/Characters/Ally/player.gd" id="1_jhb8c"]
 [ext_resource type="Texture2D" uid="uid://bfasimvh14i3l" path="res://Assets/AutumnSakilera/SpriteSheet.png" id="2_f4w1s"]
 [ext_resource type="AnimationLibrary" uid="uid://ckjnmb4saog51" path="res://Assets/AutumnSakilera/AnimPlayer.res" id="3_qyk17"]
 [ext_resource type="AnimationLibrary" uid="uid://dhbhcg4wost85" path="res://Assets/AutumnSakilera/global.res" id="4_nxm5q"]
 [ext_resource type="AnimationNodeStateMachine" uid="uid://dgefk6yecsrqf" path="res://Assets/AutumnSakilera/AnimTree.tres" id="5_ycquy"]
-[ext_resource type="PackedScene" uid="uid://cdy8alpm5swub" path="res://Scenes/contextRaycast.tscn" id="6_lm4eq"]
+[ext_resource type="BehaviorTree" uid="uid://bc42006n1oqx4" path="res://ai/trees/AutumnTree.tres" id="6_j7pyg"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_21t8d"]
 
@@ -28,25 +28,6 @@ tracks/0/keys = {
 _data = {
 "RESET": SubResource("Animation_01nun")
 }
-
-[sub_resource type="CircleShape2D" id="CircleShape2D_qncwt"]
-radius = 18.0
-
-[sub_resource type="CircleShape2D" id="CircleShape2D_nruef"]
-radius = 130.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bi3mi"]
-draw_center = false
-border_width_left = 10
-border_width_top = 10
-border_width_right = 10
-border_width_bottom = 10
-border_color = Color(0, 0, 0.8, 0.392157)
-border_blend = true
-corner_radius_top_left = 100
-corner_radius_top_right = 100
-corner_radius_bottom_right = 100
-corner_radius_bottom_left = 100
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tj0s1"]
 draw_center = false
@@ -95,15 +76,35 @@ shadow_size = 1
 
 [sub_resource type="LabelSettings" id="LabelSettings_l3v4b"]
 
-[node name="Player" type="CharacterBody2D" groups=["Player"]]
+[sub_resource type="CircleShape2D" id="CircleShape2D_qncwt"]
+radius = 18.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_nruef"]
+radius = 130.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bi3mi"]
+draw_center = false
+border_width_left = 10
+border_width_top = 10
+border_width_right = 10
+border_width_bottom = 10
+border_color = Color(0, 0, 0.8, 0.392157)
+border_blend = true
+corner_radius_top_left = 100
+corner_radius_top_right = 100
+corner_radius_bottom_right = 100
+corner_radius_bottom_left = 100
+
+[sub_resource type="BlackboardPlan" id="BlackboardPlan_v07a1"]
+
+[node name="Player" type="CharacterBody2D" groups=["player"]]
 scale = Vector2(0.4, 0.4)
 wall_min_slide_angle = 0.0
 script = ExtResource("1_jhb8c")
 health = 100.0
 maxHealth = 100.0
 level = 1
-damage = 50.0
-speed = 10.0
+damage = 10.0
 
 [node name="Body" type="CollisionShape2D" parent="."]
 visible = false
@@ -112,7 +113,6 @@ shape = SubResource("CapsuleShape2D_21t8d")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("2_f4w1s")
-flip_h = true
 hframes = 19
 vframes = 12
 frame = 133
@@ -138,7 +138,7 @@ parameters/conditions/Reset = false
 parameters/conditions/VoidBolt = false
 parameters/conditions/Walking = false
 parameters/CombatStance/blend_position = Vector2(0, 0)
-parameters/Idle/blend_position = Vector2(-0.780193, 0.865639)
+parameters/Idle/blend_position = Vector2(0.7224, 0.5)
 parameters/Reset/blend_position = Vector2(0, 0)
 parameters/VoidBolt/blend_position = Vector2(0, 0)
 parameters/Walking/blend_position = Vector2(0, -0.643)
@@ -150,36 +150,15 @@ limit_top = 3
 [node name="Timers" type="Node" parent="."]
 
 [node name="StateTimeout" type="Timer" parent="Timers"]
-one_shot = true
+autostart = true
 
 [node name="SeenTimer" type="Timer" parent="Timers"]
 wait_time = 60.0
 autostart = true
 
-[node name="Hitbox" type="Area2D" parent="." groups=["AllyHitbox"]]
-visible = false
-collision_layer = 16
-collision_mask = 32
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
-position = Vector2(0, 6)
-shape = SubResource("CircleShape2D_qncwt")
-
-[node name="Detectbox" type="Area2D" parent="." groups=["PlayerDetectionbox"]]
-visible = false
-collision_layer = 2
-collision_mask = 2
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Detectbox"]
-position = Vector2(0.5, -0.5)
-shape = SubResource("CircleShape2D_nruef")
-
-[node name="Panel" type="Panel" parent="Detectbox"]
-offset_left = -126.0
-offset_top = -127.0
-offset_right = 128.0
-offset_bottom = 124.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_bi3mi")
+[node name="MakePath" type="Timer" parent="Timers"]
+wait_time = 0.2
+autostart = true
 
 [node name="UI" type="CanvasLayer" parent="." groups=["UI"]]
 
@@ -248,13 +227,43 @@ show_percentage = false
 metadata/_edit_use_anchors_ = true
 
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+navigation_layers = 15
 path_postprocessing = 1
+debug_enabled = true
 
-[node name="contextmap" parent="." instance=ExtResource("6_lm4eq")]
+[node name="Areas" type="Node2D" parent="."]
+
+[node name="Hitbox" type="Area2D" parent="Areas" groups=["AllyHitbox"]]
 visible = false
+collision_layer = 16
+collision_mask = 32
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Areas/Hitbox"]
 position = Vector2(0, 6)
+shape = SubResource("CircleShape2D_qncwt")
+
+[node name="Detectbox" type="Area2D" parent="Areas" groups=["PlayerDetectionbox"]]
+visible = false
+collision_layer = 2
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Areas/Detectbox"]
+position = Vector2(0.5, -0.5)
+shape = SubResource("CircleShape2D_nruef")
+
+[node name="Panel" type="Panel" parent="Areas/Detectbox"]
+offset_left = -126.0
+offset_top = -127.0
+offset_right = 128.0
+offset_bottom = 124.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_bi3mi")
+
+[node name="BTPlayer" type="BTPlayer" parent="."]
+behavior_tree = ExtResource("6_j7pyg")
+blackboard_plan = SubResource("BlackboardPlan_v07a1")
 
 [connection signal="timeout" from="Timers/StateTimeout" to="." method="StateMachine"]
 [connection signal="timeout" from="Timers/SeenTimer" to="." method="Seenreset"]
-[connection signal="area_entered" from="Hitbox" to="." method="TakeDamage"]
-[connection signal="area_entered" from="Detectbox" to="." method="EnemyDetected"]
+[connection signal="timeout" from="Timers/MakePath" to="." method="MakePath"]
+[connection signal="area_entered" from="Areas/Hitbox" to="." method="TakeDamage"]
+[connection signal="area_entered" from="Areas/Detectbox" to="." method="EnemyDetected"]
