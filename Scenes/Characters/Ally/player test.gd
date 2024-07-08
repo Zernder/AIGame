@@ -1,18 +1,22 @@
-class_name PlayerBaseScene extends CharacterBody2D
+class_name PlayerTestScene extends CharacterBody2D
+
+class banana extends PlayerTestScene:
+	pass
 
 #region The Variables
-
 
 @export var health: float
 @export var maxHealth: float
 @export var level: int
 @export var damage: float
 @export var speed: float
-
 @onready var currentxp: int = 0
 @onready var requiredxp: int = 1 * level
-@onready var tilemap = $"../TileMap"
+@onready var vision: Array = []
+@onready var memory: Array = []
 
+
+@onready var tilemap = $"../TileMap"
 var direction: Vector2
 var DetectedArray: Array = []
 @onready var NavAgent = $NavigationAgent2D
@@ -55,7 +59,6 @@ func UIProcess():
 #endregion
 
 
-
 #region StateMachine
 
 
@@ -73,16 +76,16 @@ var currentState
 func StateMachine():
 	match currentState:
 		IDLE:
-			print("Idle")
+			#print("Idle")
 			Idle()
 		WANDER:
 			print("Wander")
 			Wander()
 		COMBAT:
-			print("Combat")
+			#print("Combat")
 			Combat()
-	if currentState == IDLE:
-		currentState = WANDER
+	#if currentState == IDLE:
+		#currentState = WANDER
 
 
 #endregion
@@ -91,24 +94,44 @@ func StateMachine():
 #region Idle and Wander
 
 
-var wandertime = randf_range(1, 3)
-@onready var nav_markers = $"../NavMarkers"
-var chosenmarker
+var IdleTime = randf_range(1, 8)
+@onready var poi = $"../POI"
+@onready var idle_timer = $Timers/IdleTimer
 
 func Idle():
 	velocity = Vector2.ZERO
 	SetWalking(false)
 	UpdateBlend()
-	var chosendirection = nav_markers.get_children()
-	chosendirection.shuffle()
-	chosenmarker = chosendirection.front()
-	NavAgent.target_position = chosenmarker.position
-	StateTimer.start(wandertime)
+	idle_timer.start(IdleTime)
+	print(idle_timer.time_left)
 
+
+func IdleTimeout():
+	currentState = WANDER
+	StateMachine()
+
+
+var went: bool = false
+func ChooseDirection():
+	pass
 
 func Wander():
-	direction = to_local(NavAgent.get_next_path_position()).normalized()
-	velocity = direction * speed
+	var visionmarker
+	var memorymarker
+	if !vision.is_empty():
+		vision.shuffle()
+		visionmarker = vision.front()
+		went = true
+		NavAgent.target_position = visionmarker.global_position
+		print(visionmarker)
+		vision.erase(vision.front())
+	elif vision.is_empty() and went == true:
+		memory.shuffle()
+		memorymarker = memory.front()
+		NavAgent.target_position = memorymarker.global_position
+	else:
+		currentState = IDLE
+		StateTimer.start(IdleTime)
 	SetWalking(true)
 	UpdateBlend()
 
@@ -119,17 +142,27 @@ func MakePath():
 		velocity = direction * speed
 		SetWalking(true)
 		UpdateBlend()
-		if NavAgent.distance_to_target() <= 10:
-			Idle()
-	else:
-		Idle()
+		if NavAgent.distance_to_target() <= 5:
+			currentState = IDLE
+			StateMachine()
 
+
+func Visual(area):
+	if area.is_in_group("POI"):
+		vision.append(area)
+		memory.append(area)
+
+
+func NotVisual(area):
+	if area.is_in_group("POI"):
+		vision.erase(area)
+		if area.is_in_group("potion"):
+			memory.erase(area)
 
 #endregion
 
 
 #region Combat
-
 
 func EnemyDetected(area):
 	if area.get_parent().is_in_group("Enemy"):
@@ -252,11 +285,9 @@ func CombatStance(value: bool):
 func UpdateBlend():
 	AnimTree["parameters/Idle/blend_position"] = direction
 	AnimTree["parameters/Walking/blend_position"] = direction
-	AnimTree["parameters/CombatStance/blend_position"] = direction
-	AnimTree["parameters/VoidBolt/blend_position"] = direction
-
+	#AnimTree["parameters/CombatStance/blend_position"] = direction
+	#AnimTree["parameters/VoidBolt/blend_position"] = direction
 
 #endregion
-
 
 
