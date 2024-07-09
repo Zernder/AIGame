@@ -1,0 +1,252 @@
+[gd_scene load_steps=8 format=3 uid="uid://co6l5qpiqgaj5"]
+
+[ext_resource type="Script" path="res://Scenes/GUI/CharacterSheet.gd" id="1_h5mef"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_77vnr"]
+bg_color = Color(0.780392, 0.996078, 0, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0.980392, 0.67451, 0.160784, 1)
+border_blend = true
+corner_radius_top_left = 30
+corner_radius_top_right = 30
+corner_radius_bottom_right = 30
+corner_radius_bottom_left = 30
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_50ptk"]
+bg_color = Color(1, 1, 0.0470588, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0.92549, 0.72549, 0, 1)
+border_blend = true
+corner_radius_top_left = 30
+corner_radius_top_right = 30
+corner_radius_bottom_right = 30
+corner_radius_bottom_left = 30
+
+[sub_resource type="LabelSettings" id="LabelSettings_eyoge"]
+font_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_iov8m"]
+bg_color = Color(0.172549, 0, 0.905882, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="LabelSettings" id="LabelSettings_ojsha"]
+font_size = 20
+font_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_djxbm"]
+bg_color = Color(0, 0, 0, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0, 0, 0.8, 1)
+border_blend = true
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[node name="Character Sheet" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_h5mef")
+
+[node name="MainWindow" type="Panel" parent="."]
+custom_minimum_size = Vector2(300, 500)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.3225
+anchor_top = -0.27
+anchor_right = 0.9475
+anchor_bottom = 1.23
+offset_top = 200.0
+offset_right = -200.0
+offset_bottom = -200.0
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_77vnr")
+metadata/_edit_use_anchors_ = true
+
+[node name="Character Name and Level Window" type="Panel" parent="MainWindow"]
+custom_minimum_size = Vector2(292, 65)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.0133333
+anchor_top = 0.008
+anchor_right = 0.986667
+anchor_bottom = 0.138
+grow_horizontal = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_50ptk")
+metadata/_edit_use_anchors_ = true
+
+[node name="Name and Level Label" type="Label" parent="MainWindow/Character Name and Level Window"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Autumn Sakilera
+Level 1
+"
+label_settings = SubResource("LabelSettings_eyoge")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Skill Point" type="Label" parent="MainWindow/Character Name and Level Window"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 87.0
+offset_top = 68.0
+offset_right = -85.0
+offset_bottom = 26.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Skill Points: 500
+"
+label_settings = SubResource("LabelSettings_eyoge")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Panel" type="Panel" parent="MainWindow"]
+custom_minimum_size = Vector2(295, 300)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.01
+anchor_top = 0.2
+anchor_right = 0.993333
+anchor_bottom = 0.8
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="Health" type="Panel" parent="MainWindow/Panel"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.00333333
+anchor_right = 0.99661
+anchor_bottom = 0.306667
+theme_override_styles/panel = SubResource("StyleBoxFlat_iov8m")
+metadata/_edit_use_anchors_ = true
+
+[node name="Label" type="Label" parent="MainWindow/Panel/Health"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.017094
+anchor_top = -0.000818178
+anchor_right = 0.991453
+anchor_bottom = 0.724111
+offset_bottom = -22.6322
+text = "Health
+100"
+label_settings = SubResource("LabelSettings_ojsha")
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="Button" type="Button" parent="MainWindow/Panel/Health"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.188034
+anchor_top = 0.60177
+anchor_right = 0.846154
+anchor_bottom = 1.0
+offset_bottom = -6.0
+theme_override_styles/normal = SubResource("StyleBoxFlat_djxbm")
+text = "+"
+metadata/_edit_use_anchors_ = true
+
+[node name="Mana" type="Panel" parent="MainWindow/Panel"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.00338983
+anchor_top = 0.696667
+anchor_right = 0.99661
+anchor_bottom = 0.996667
+theme_override_styles/panel = SubResource("StyleBoxFlat_iov8m")
+metadata/_edit_use_anchors_ = true
+
+[node name="Label" type="Label" parent="MainWindow/Panel/Mana"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.017094
+anchor_top = -0.000825548
+anchor_right = 0.991453
+anchor_bottom = 0.730635
+offset_bottom = -22.6322
+text = "Mana
+100"
+label_settings = SubResource("LabelSettings_ojsha")
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="Button" type="Button" parent="MainWindow/Panel/Mana"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.177795
+anchor_top = 0.635103
+anchor_right = 0.835915
+anchor_bottom = 1.03333
+offset_bottom = -6.0
+theme_override_styles/normal = SubResource("StyleBoxFlat_djxbm")
+text = "+"
+metadata/_edit_use_anchors_ = true
+
+[node name="Stamina" type="Panel" parent="MainWindow/Panel"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.00338983
+anchor_top = 0.346667
+anchor_right = 1.00339
+anchor_bottom = 0.646667
+theme_override_styles/panel = SubResource("StyleBoxFlat_iov8m")
+metadata/_edit_use_anchors_ = true
+
+[node name="Label" type="Label" parent="MainWindow/Panel/Stamina"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.017094
+anchor_top = -0.000825549
+anchor_right = 0.991453
+anchor_bottom = 0.730635
+offset_bottom = -22.6322
+text = "Stamina
+100"
+label_settings = SubResource("LabelSettings_ojsha")
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="Button" type="Button" parent="MainWindow/Panel/Stamina"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.181254
+anchor_top = 0.635103
+anchor_right = 0.839374
+anchor_bottom = 1.03333
+offset_bottom = -6.0
+theme_override_styles/normal = SubResource("StyleBoxFlat_djxbm")
+text = "+"
+metadata/_edit_use_anchors_ = true
+
+[connection signal="pressed" from="MainWindow/Panel/Health/Button" to="." method="IncreaseHealth"]
+[connection signal="pressed" from="MainWindow/Panel/Mana/Button" to="." method="IncreaseMana"]
+[connection signal="pressed" from="MainWindow/Panel/Stamina/Button" to="." method="IncreaseStamina"]

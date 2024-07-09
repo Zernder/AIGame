@@ -18,12 +18,19 @@ radius = 22.0
 radius = 22.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_ofrvu"]
-radius = 60.0
+radius = 180.0
 
-[node name="Enemy" type="CharacterBody2D" groups=["Enemy"]]
+[node name="Enemy" type="CharacterBody2D" groups=["enemy"]]
 motion_mode = 1
 wall_min_slide_angle = 0.0
 script = ExtResource("1_qqbmt")
+health = 40.0
+maxHealth = 40.0
+level = 1
+physicalDamage = 5.0
+physicalDefense = 5.0
+magicalDefense = 5.0
+speed = 5.0
 
 [node name="Body" type="CollisionShape2D" parent="."]
 light_mask = 65
@@ -47,8 +54,14 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_qoi8o")
 
 [node name="Timers" type="Node" parent="."]
 
-[node name="StateTimeout" type="Timer" parent="Timers"]
-wait_time = 0.8
+[node name="StateTimer" type="Timer" parent="Timers"]
+one_shot = true
+
+[node name="IdleTimer" type="Timer" parent="Timers"]
+one_shot = true
+
+[node name="MakePath" type="Timer" parent="Timers"]
+wait_time = 0.2
 autostart = true
 
 [node name="Hitbox" type="Area2D" parent="." groups=["EnemyHitbox"]]
@@ -73,8 +86,17 @@ collision_mask = 2
 shape = SubResource("CircleShape2D_ofrvu")
 
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+path_desired_distance = 10.0
+path_max_distance = 15.0
+navigation_layers = 3
+path_postprocessing = 1
+debug_enabled = true
 
-[connection signal="timeout" from="Timers/StateTimeout" to="." method="_on_state_timeout_timeout"]
+[connection signal="timeout" from="Timers/StateTimer" to="." method="_on_state_timeout_timeout"]
+[connection signal="timeout" from="Timers/IdleTimer" to="." method="IdleTimeout"]
+[connection signal="timeout" from="Timers/MakePath" to="." method="MakePath"]
 [connection signal="area_entered" from="Hurtbox" to="." method="_on_hurtbox_area_entered"]
-[connection signal="area_entered" from="Detectbox" to="." method="_on_detectbox_area_entered"]
-[connection signal="area_exited" from="Detectbox" to="." method="_on_detectbox_area_exited"]
+[connection signal="area_entered" from="Detectbox" to="." method="Visual"]
+[connection signal="area_entered" from="Detectbox" to="." method="EnemyDetected"]
+[connection signal="area_exited" from="Detectbox" to="." method="EnemyLost"]
+[connection signal="area_exited" from="Detectbox" to="." method="NotVisual"]
