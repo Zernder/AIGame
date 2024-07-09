@@ -17,8 +17,6 @@ class_name EnemyBaseScene extends CharacterBody2D
 @onready var currentxp: int = 0
 @onready var requiredxp: int = 1 * level
 
-@onready var VisionArray: Array = []
-@onready var MemoryArray: Array = []
 @onready var EnemyArray: Array = []
 
 var direction: Vector2
@@ -75,17 +73,14 @@ enum {
 
 
 var currentState
-@onready var statetimer = $Timers/StateTimer
+@onready var StateTimer = $Timers/StateTimer
 func StateMachine():
 	match currentState:
 		IDLE:
-			#print("Idle")
 			Idle()
 		WANDER:
-			#print("Wander")
 			Wander()
 		COMBAT:
-			#print("Combat")
 			Combat()
 
 
@@ -94,14 +89,15 @@ func StateMachine():
 
 #region Idle and Wander
 
+@onready var VisitedArray: Array = []
+@onready var VisionArray: Array = []
 
 var IdleTime = randf_range(1, 3)
-@onready var poi = $"../../POI"
 @onready var idle_timer = $Timers/IdleTimer
 
 func Idle():
 	velocity = Vector2.ZERO
-	idle_timer.start(IdleTime)
+	idle_timer.start(0.5)
 
 
 func IdleTimeout():
@@ -110,47 +106,55 @@ func IdleTimeout():
 		StateMachine()
 
 
-var went: bool = false
 func Wander():
 	var VisionArraymarker
-	var MemoryArraymarker
+	var visitedArrayMarker
 	if !VisionArray.is_empty():
-		VisionArray.shuffle()
-		VisionArraymarker = VisionArray.front()
-		went = true
-		NavAgent.target_position = VisionArraymarker.global_position
-
-		VisionArray.erase(VisionArray.front())
-	elif VisionArray.is_empty() and went == true:
-		MemoryArray.shuffle()
-		MemoryArraymarker = MemoryArray.front()
-		if MemoryArraymarker != null:
-			NavAgent.target_position = MemoryArraymarker.global_position
+		for marker in VisionArray:
+			if marker and marker.global_position not in VisitedArray:
+				VisionArraymarker = marker
+				break
+		if VisionArraymarker:
+			NavAgent.target_position = VisionArraymarker.global_position
+			VisitedArray.append(VisionArraymarker)
+			VisionArray.erase(VisionArraymarker)
+	elif VisionArray.is_empty():
+		VisitedArray.shuffle()
+		for marker in VisitedArray:
+			if marker and marker.global_position:
+				visitedArrayMarker = marker
+				break
+		if visitedArrayMarker:
+			NavAgent.target_position = visitedArrayMarker.global_position
+		else:
+			VisitedArray.shuffle()
+			for marker in VisitedArray:
+				if marker:
+					visitedArrayMarker = marker
+					break
+			if visitedArrayMarker:
+				NavAgent.target_position = visitedArrayMarker
 	else:
-		currentState = IDLE
-		statetimer.start(IdleTime)
+		var Rest: Array = [IDLE, WANDER, WANDER, WANDER]
+		Rest.shuffle()
+		var ShouldIRest = Rest.front()
+		currentState = ShouldIRest
+		StateTimer.start(0.2)
 
 
 func MakePath():
 	if currentState == WANDER:
 		direction = to_local(NavAgent.get_next_path_position()).normalized()
 		velocity = direction * speed
-		if NavAgent.distance_to_target() <= 5:
+		if NavAgent.distance_to_target() <= 10:
 			currentState = IDLE
 			StateMachine()
 
 
 func Visual(area):
-	if area.is_in_group("POI") and !MemoryArray.has(area):
+	if area.is_in_group("POI") and !VisitedArray.has(area):
 		VisionArray.append(area)
-		MemoryArray.append(area)
 
-
-func NotVisual(area):
-	if area.is_in_group("POI"):
-		VisionArray.erase(area)
-		if area.is_in_group("potion"):
-			MemoryArray.erase(area)
 
 #endregion
 

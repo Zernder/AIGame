@@ -1,16 +1,16 @@
-[gd_resource type="AnimationNodeStateMachine" load_steps=36 format=3 uid="uid://dms0plr8p88mm"]
+[gd_resource type="AnimationNodeStateMachine" load_steps=43 format=3 uid="uid://dms0plr8p88mm"]
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_yiq20"]
-animation = &"AnimPlayer/FrontLeftAttackStance"
-
-[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_ltpyj"]
-animation = &"AnimPlayer/FrontRightAttackStance"
-
-[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_6fpld"]
 animation = &"AnimPlayer/BackLeftAttackStance"
 
-[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_uli2r"]
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_ltpyj"]
 animation = &"AnimPlayer/BackRightAttackStance"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_6fpld"]
+animation = &"AnimPlayer/FrontLeftAttackStance"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_uli2r"]
+animation = &"AnimPlayer/FrontRightAttackStance"
 
 [sub_resource type="AnimationNodeBlendSpace2D" id="AnimationNodeBlendSpace2D_q4gxu"]
 blend_point_0/node = SubResource("AnimationNodeAnimation_yiq20")
@@ -77,16 +77,16 @@ max_space = Vector2(1.5, 1.5)
 blend_mode = 1
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_55xye"]
-animation = &"AnimPlayer/FrontRightVoidBolt"
-
-[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_7lt43"]
-animation = &"AnimPlayer/BackLeftVoidBolt"
-
-[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_c1dg0"]
 animation = &"AnimPlayer/BackRightVoidBolt"
 
-[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_38w5u"]
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_7lt43"]
 animation = &"AnimPlayer/FrontLeftVoidBolt"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_c1dg0"]
+animation = &"AnimPlayer/FrontRightVoidBolt"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_38w5u"]
+animation = &"AnimPlayer/BackLeftVoidBolt"
 
 [sub_resource type="AnimationNodeBlendSpace2D" id="AnimationNodeBlendSpace2D_2ck3n"]
 blend_point_0/node = SubResource("AnimationNodeAnimation_55xye")
@@ -97,6 +97,31 @@ blend_point_2/node = SubResource("AnimationNodeAnimation_c1dg0")
 blend_point_2/pos = Vector2(1.1, -1.1)
 blend_point_3/node = SubResource("AnimationNodeAnimation_38w5u")
 blend_point_3/pos = Vector2(-1.1, 1.1)
+min_space = Vector2(-1.5, -1.5)
+max_space = Vector2(1.5, 1.5)
+blend_mode = 1
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_7ku2j"]
+animation = &"AnimPlayer/BackLeftVoidSwing"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_lks35"]
+animation = &"AnimPlayer/BackRightVoidSwing"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_j4p27"]
+animation = &"AnimPlayer/FrontRightVoidSwing"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_6uucu"]
+animation = &"AnimPlayer/FrontLeftVoidSwing"
+
+[sub_resource type="AnimationNodeBlendSpace2D" id="AnimationNodeBlendSpace2D_mwvvx"]
+blend_point_0/node = SubResource("AnimationNodeAnimation_7ku2j")
+blend_point_0/pos = Vector2(-1.1, 1.1)
+blend_point_1/node = SubResource("AnimationNodeAnimation_lks35")
+blend_point_1/pos = Vector2(1.1, 1.1)
+blend_point_2/node = SubResource("AnimationNodeAnimation_j4p27")
+blend_point_2/pos = Vector2(1.1, -1.1)
+blend_point_3/node = SubResource("AnimationNodeAnimation_6uucu")
+blend_point_3/pos = Vector2(-1.1, -1.1)
 min_space = Vector2(-1.5, -1.5)
 max_space = Vector2(1.5, 1.5)
 blend_mode = 1
@@ -168,6 +193,15 @@ advance_condition = &"Reset"
 advance_mode = 2
 advance_condition = &"Combat"
 
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_8yd6b"]
+switch_mode = 2
+advance_mode = 2
+advance_condition = &"VoidPunch"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_o62gs"]
+advance_mode = 2
+advance_condition = &"Reset"
+
 [resource]
 states/CombatStance/node = SubResource("AnimationNodeBlendSpace2D_q4gxu")
 states/CombatStance/position = Vector2(348, 223.221)
@@ -177,8 +211,10 @@ states/Reset/node = SubResource("AnimationNodeBlendSpace2D_0lqaj")
 states/Reset/position = Vector2(190, 223.221)
 states/Start/position = Vector2(190, 143)
 states/VoidBolt/node = SubResource("AnimationNodeBlendSpace2D_2ck3n")
-states/VoidBolt/position = Vector2(348, 302)
+states/VoidBolt/position = Vector2(202, 309)
+states/VoidPunch/node = SubResource("AnimationNodeBlendSpace2D_mwvvx")
+states/VoidPunch/position = Vector2(358, 309)
 states/Walking/node = SubResource("AnimationNodeBlendSpace2D_8pgxw")
 states/Walking/position = Vector2(545, 143)
-transitions = ["Idle", "Walking", SubResource("AnimationNodeStateMachineTransition_c0bpd"), "Walking", "Idle", SubResource("AnimationNodeStateMachineTransition_8d0i1"), "Idle", "CombatStance", SubResource("AnimationNodeStateMachineTransition_yxa7e"), "Start", "Idle", SubResource("AnimationNodeStateMachineTransition_gurrx"), "CombatStance", "VoidBolt", SubResource("AnimationNodeStateMachineTransition_vow35"), "Reset", "Idle", SubResource("AnimationNodeStateMachineTransition_iljoc"), "VoidBolt", "Reset", SubResource("AnimationNodeStateMachineTransition_wo7tx"), "Walking", "CombatStance", SubResource("AnimationNodeStateMachineTransition_ttd13")]
+transitions = ["Idle", "Walking", SubResource("AnimationNodeStateMachineTransition_c0bpd"), "Walking", "Idle", SubResource("AnimationNodeStateMachineTransition_8d0i1"), "Idle", "CombatStance", SubResource("AnimationNodeStateMachineTransition_yxa7e"), "Start", "Idle", SubResource("AnimationNodeStateMachineTransition_gurrx"), "CombatStance", "VoidBolt", SubResource("AnimationNodeStateMachineTransition_vow35"), "Reset", "Idle", SubResource("AnimationNodeStateMachineTransition_iljoc"), "VoidBolt", "Reset", SubResource("AnimationNodeStateMachineTransition_wo7tx"), "Walking", "CombatStance", SubResource("AnimationNodeStateMachineTransition_ttd13"), "CombatStance", "VoidPunch", SubResource("AnimationNodeStateMachineTransition_8yd6b"), "VoidPunch", "Reset", SubResource("AnimationNodeStateMachineTransition_o62gs")]
 graph_offset = Vector2(-153, 97.2213)

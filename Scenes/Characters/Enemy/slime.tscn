@@ -11,8 +11,6 @@ corner_radius_bottom_left = 100
 
 [node name="Slime" groups=["slime"] instance=ExtResource("1_3iy3e")]
 scale = Vector2(0.2, 0.2)
-health = 20.0
-maxHealth = 20.0
 
 [node name="Body" parent="." index="0"]
 visible = false
@@ -25,3 +23,6 @@ visible = false
 
 [node name="Hurtbox" parent="." index="4"]
 visible = false
+
+[node name="NavigationAgent2D" parent="." index="6"]
+debug_enabled = false

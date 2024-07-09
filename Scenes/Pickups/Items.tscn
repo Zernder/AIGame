@@ -1,0 +1,132 @@
+[gd_scene load_steps=4 format=3 uid="uid://b0c5wum7smycb"]
+
+[ext_resource type="Script" path="res://Scenes/Pickups/Items.gd" id="1_i65eq"]
+[ext_resource type="Texture2D" uid="uid://cwvqe7n0iy1t6" path="res://Assets/Tilesets/Images/Objects/apple-icon.png" id="2_wuqoc"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_4me6s"]
+
+[node name="Items" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_i65eq")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.07875
+anchor_top = 0.0766667
+anchor_right = 0.8975
+anchor_bottom = 0.848333
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="Health Potion" type="Panel" parent="Panel"]
+layout_mode = 0
+offset_left = 49.0
+offset_top = 38.0
+offset_right = 193.0
+offset_bottom = 185.0
+
+[node name="Health Potion Label" type="Label" parent="Panel/Health Potion"]
+layout_mode = 0
+offset_left = -1.0
+offset_top = 101.0
+offset_right = 145.0
+offset_bottom = 125.0
+text = "Health Potion
+Amount: 500"
+label_settings = SubResource("LabelSettings_4me6s")
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="TouchScreenButton" type="TouchScreenButton" parent="Panel/Health Potion"]
+position = Vector2(1, 0)
+scale = Vector2(9, 6.625)
+texture_normal = ExtResource("2_wuqoc")
+visibility_mode = 1
+
+[node name="TextureButton" type="TextureButton" parent="Panel/Health Potion"]
+layout_mode = 0
+offset_right = 145.0
+offset_bottom = 102.0
+texture_normal = ExtResource("2_wuqoc")
+stretch_mode = 0
+
+[node name="Stamina Potion" type="Panel" parent="Panel"]
+layout_mode = 0
+offset_left = 225.0
+offset_top = 38.0
+offset_right = 369.0
+offset_bottom = 185.0
+
+[node name="Stamina Potion Label" type="Label" parent="Panel/Stamina Potion"]
+layout_mode = 0
+offset_left = -1.0
+offset_top = 101.0
+offset_right = 145.0
+offset_bottom = 125.0
+text = "Health Potion
+Amount: 500"
+label_settings = SubResource("LabelSettings_4me6s")
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="TouchScreenButton" type="TouchScreenButton" parent="Panel/Stamina Potion"]
+position = Vector2(1, 0)
+scale = Vector2(9, 6.625)
+texture_normal = ExtResource("2_wuqoc")
+visibility_mode = 1
+
+[node name="TextureButton" type="TextureButton" parent="Panel/Stamina Potion"]
+modulate = Color(0, 1, 0, 1)
+layout_mode = 0
+offset_right = 145.0
+offset_bottom = 102.0
+texture_normal = ExtResource("2_wuqoc")
+stretch_mode = 0
+
+[node name="Mana Potion" type="Panel" parent="Panel"]
+layout_mode = 0
+offset_left = 403.0
+offset_top = 38.0
+offset_right = 547.0
+offset_bottom = 185.0
+
+[node name="Mana Potion Label" type="Label" parent="Panel/Mana Potion"]
+layout_mode = 0
+offset_left = -1.0
+offset_top = 101.0
+offset_right = 145.0
+offset_bottom = 125.0
+text = "Health Potion
+Amount: 500"
+label_settings = SubResource("LabelSettings_4me6s")
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="TouchScreenButton" type="TouchScreenButton" parent="Panel/Mana Potion"]
+modulate = Color(0, 0, 1, 1)
+position = Vector2(1, 0)
+scale = Vector2(9, 6.625)
+texture_normal = ExtResource("2_wuqoc")
+visibility_mode = 1
+
+[node name="TextureButton" type="TextureButton" parent="Panel/Mana Potion"]
+modulate = Color(0, 0, 1, 1)
+layout_mode = 0
+offset_right = 145.0
+offset_bottom = 102.0
+texture_normal = ExtResource("2_wuqoc")
+stretch_mode = 0
+
+[connection signal="pressed" from="Panel/Health Potion/TouchScreenButton" to="." method="HealthPotionTouched"]
+[connection signal="pressed" from="Panel/Health Potion/TextureButton" to="." method="HealthButtonPressed"]
+[connection signal="pressed" from="Panel/Stamina Potion/TouchScreenButton" to="." method="StaminaPotionTouched"]
+[connection signal="pressed" from="Panel/Stamina Potion/TextureButton" to="." method="StaminaButtonPressed"]
+[connection signal="pressed" from="Panel/Mana Potion/TouchScreenButton" to="." method="ManaPotionTouched"]
+[connection signal="pressed" from="Panel/Mana Potion/TextureButton" to="." method="ManaButtonPressed"]
