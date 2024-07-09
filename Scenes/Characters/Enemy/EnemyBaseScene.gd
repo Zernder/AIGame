@@ -188,7 +188,6 @@ func Death():
 		queue_free()
 
 
-
 func Knockback(enemy, _area, reverse: bool = false):
 	var pushback = (enemy.global_position - global_position).normalized() * 30
 	if reverse:
@@ -200,8 +199,6 @@ func Knockback(enemy, _area, reverse: bool = false):
 
 func _on_hurtbox_area_entered(area):
 	Knockback($".", area)
-
-
 
 
 

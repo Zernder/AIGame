@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=3 uid="uid://d2qb2nxmspqc5"]
+[gd_scene load_steps=29 format=3 uid="uid://d2qb2nxmspqc5"]
 
 [ext_resource type="Texture2D" uid="uid://dxiofar6l4mf" path="res://Assets/Tilesets/2D Dungeon Asset Pack_v5.2/character and tileset/Dungeon_Enemy_v2.png" id="1_7eeu0"]
 [ext_resource type="Texture2D" uid="uid://dcgkvmwrfbmc" path="res://Assets/Tilesets/2D Dungeon Asset Pack_v5.2/character and tileset/Dungeon_item_props_v2.png" id="2_mt64v"]
@@ -7,10 +7,11 @@
 [ext_resource type="Texture2D" uid="uid://bup3663lwoydl" path="res://Assets/Tilesets/2D Dungeon Asset Pack_v5.2/items_animation/torch.png" id="5_dd2di"]
 [ext_resource type="PackedScene" uid="uid://cos8vnesyva5n" path="res://Scenes/Characters/Enemy/slime.tscn" id="6_f6664"]
 [ext_resource type="PackedScene" uid="uid://de326w7r67yhd" path="res://Scenes/Pickups/POI.tscn" id="7_5s1xx"]
-[ext_resource type="PackedScene" uid="uid://cr05ix60wg2l6" path="res://Scenes/Characters/Ally/player.tscn" id="8_f60gx"]
 [ext_resource type="Script" path="res://Scenes/GUI/LevelUI.gd" id="9_e76tf"]
+[ext_resource type="PackedScene" uid="uid://bsm0alolb3uhj" path="res://Scenes/Characters/Ally/autumn.tscn" id="10_5488q"]
 [ext_resource type="PackedScene" uid="uid://d1fgewdua4u35" path="res://Scenes/Pickups/HealthPotion.tscn" id="10_a2bws"]
 [ext_resource type="PackedScene" uid="uid://cgiel11mei4t0" path="res://Scenes/Pickups/ManaPotion.tscn" id="11_01r7b"]
+[ext_resource type="PackedScene" uid="uid://cbj45etdbbgsh" path="res://Scenes/Characters/Ally/tamaneko.tscn" id="11_5a7eg"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_pvv28"]
 texture = ExtResource("1_7eeu0")
@@ -747,7 +748,7 @@ sources/2 = SubResource("TileSetAtlasSource_ofly7")
 sources/3 = SubResource("TileSetScenesCollectionSource_n8li3")
 sources/4 = SubResource("TileSetAtlasSource_4mmkb")
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qpugg"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0fawm"]
 bg_color = Color(1, 0.352941, 0.176471, 1)
 border_width_left = 2
 border_width_top = 2
@@ -773,7 +774,7 @@ layer_1/tile_data = PackedInt32Array(29, 65537, 3, 33, 65537, 3, 37, 65537, 3, 4
 [node name="Slimes" type="Node2D" parent="."]
 
 [node name="Slime" parent="Slimes" instance=ExtResource("6_f6664")]
-position = Vector2(583, 167)
+position = Vector2(497, 199)
 motion_mode = 0
 wall_min_slide_angle = 0.261799
 
@@ -817,7 +818,13 @@ position = Vector2(217, 58)
 motion_mode = 0
 wall_min_slide_angle = 0.261799
 
-[node name="HealthPickups" type="Node2D" parent="."]
+[node name="Pickups" type="Node2D" parent="."]
+
+[node name="Mana Potion" parent="Pickups" instance=ExtResource("11_01r7b")]
+position = Vector2(471, 39)
+
+[node name="HealthPotion" parent="Pickups" instance=ExtResource("10_a2bws")]
+position = Vector2(504, 72)
 
 [node name="MainPath" type="Node2D" parent="."]
 
@@ -1032,8 +1039,17 @@ position = Vector2(583, 199)
 [node name="Thats a lot of Barrels!" parent="POI" instance=ExtResource("7_5s1xx")]
 position = Vector2(327, 40)
 
-[node name="Player" parent="." instance=ExtResource("8_f60gx")]
-position = Vector2(505, 23)
+[node name="Autumn" parent="." instance=ExtResource("10_5488q")]
+position = Vector2(503, 22)
+scale = Vector2(0.4, 0.4)
+
+[node name="Tamaneko" parent="." groups=["Autumn"] instance=ExtResource("11_5a7eg")]
+position = Vector2(490, 29)
+scale = Vector2(0.6, 0.6)
+physicalDamage = 20.0
+magicalDamage = 60.0
+physicalDefense = 2.0
+magicalDefense = 10.0
 
 [node name="Spawn" type="Marker2D" parent="." groups=["Spawn"]]
 position = Vector2(480, 42)
@@ -1045,7 +1061,7 @@ script = ExtResource("9_e76tf")
 custom_minimum_size = Vector2(100, 25)
 offset_right = 158.0
 offset_bottom = 25.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_qpugg")
+theme_override_styles/panel = SubResource("StyleBoxFlat_0fawm")
 metadata/_edit_use_anchors_ = true
 
 [node name="Label" type="Label" parent="LevelUI/Panel"]
@@ -1058,12 +1074,4 @@ grow_vertical = 2
 text = "Enemies Left: 10000"
 metadata/_edit_use_anchors_ = true
 
-[node name="Mana Potion" parent="." instance=ExtResource("11_01r7b")]
-position = Vector2(471, 39)
-
-[node name="HealthPotion" parent="." instance=ExtResource("10_a2bws")]
-position = Vector2(504, 72)
-
-[connection signal="body_entered" from="TileMap/Gate" to="TileMap/Gate" method="_on_body_entered"]
-[connection signal="body_exited" from="TileMap/Gate" to="TileMap/Gate" method="_on_body_exited"]
-[connection signal="body_entered" from="Mana Potion" to="Mana Potion" method="HealthPotionPickedUp"]
+[connection signal="body_entered" from="Pickups/Mana Potion" to="Pickups/Mana Potion" method="HealthPotionPickedUp"]

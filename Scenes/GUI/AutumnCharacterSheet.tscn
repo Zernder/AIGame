@@ -1,6 +1,6 @@
 [gd_scene load_steps=8 format=3 uid="uid://co6l5qpiqgaj5"]
 
-[ext_resource type="Script" path="res://Scenes/GUI/CharacterSheet.gd" id="1_h5mef"]
+[ext_resource type="Script" path="res://Scenes/GUI/AutumnCharacterSheet.gd" id="1_mq4kx"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_77vnr"]
 bg_color = Color(0.780392, 0.996078, 0, 1)
@@ -62,7 +62,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_h5mef")
+script = ExtResource("1_mq4kx")
 
 [node name="MainWindow" type="Panel" parent="."]
 custom_minimum_size = Vector2(300, 500)

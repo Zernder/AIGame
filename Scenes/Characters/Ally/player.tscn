@@ -1,17 +1,18 @@
-[gd_scene load_steps=26 format=3 uid="uid://cr05ix60wg2l6"]
+[gd_scene load_steps=25 format=3 uid="uid://cr05ix60wg2l6"]
 
-[ext_resource type="Script" path="res://Scenes/Characters/Ally/player.gd" id="1_jhb8c"]
-[ext_resource type="Texture2D" uid="uid://bfasimvh14i3l" path="res://Assets/AutumnSakilera/SpriteSheet.png" id="2_f4w1s"]
-[ext_resource type="AnimationLibrary" uid="uid://ckjnmb4saog51" path="res://Assets/AutumnSakilera/AnimPlayer.res" id="3_qyk17"]
-[ext_resource type="AnimationNodeStateMachine" uid="uid://dms0plr8p88mm" path="res://Assets/AutumnSakilera/AnimTreeAI.tres" id="4_kylpv"]
-[ext_resource type="AnimationLibrary" uid="uid://dhbhcg4wost85" path="res://Assets/AutumnSakilera/global.res" id="4_nxm5q"]
-[ext_resource type="PackedScene" uid="uid://co6l5qpiqgaj5" path="res://Scenes/GUI/CharacterSheet.tscn" id="5_jeshq"]
-[ext_resource type="Script" path="res://Scenes/GUI/Touch Screen Buttons.gd" id="7_5v0a8"]
-[ext_resource type="Texture2D" uid="uid://bhkmaxrd8arw1" path="res://Assets/AutumnSakilera/AutumnIcon.png" id="7_pobbp"]
-[ext_resource type="Texture2D" uid="uid://bvg20nbrjgdf6" path="res://Assets/Tilesets/Images/GUI/inventory-slot.png" id="8_4k6sv"]
-[ext_resource type="PackedScene" uid="uid://b0c5wum7smycb" path="res://Scenes/Pickups/Items.tscn" id="9_q18p5"]
+[ext_resource type="Texture2D" uid="uid://bfasimvh14i3l" path="res://Assets/AutumnSakilera/SpriteSheet.png" id="1_plqj8"]
+[ext_resource type="AnimationLibrary" uid="uid://ckjnmb4saog51" path="res://Assets/AutumnSakilera/AnimPlayer.res" id="2_j507a"]
+[ext_resource type="AnimationLibrary" uid="uid://dhbhcg4wost85" path="res://Assets/AutumnSakilera/global.res" id="3_3k5r7"]
+[ext_resource type="AnimationNodeStateMachine" uid="uid://dgefk6yecsrqf" path="res://Assets/AutumnSakilera/AnimTree.tres" id="4_l5vyd"]
+[ext_resource type="PackedScene" uid="uid://co6l5qpiqgaj5" path="res://Scenes/GUI/AutumnCharacterSheet.tscn" id="5_ate0t"]
+[ext_resource type="Script" path="res://Scenes/GUI/Touch Screen Buttons.gd" id="6_pw1fm"]
+[ext_resource type="Texture2D" uid="uid://bhkmaxrd8arw1" path="res://Assets/AutumnSakilera/AutumnIcon.png" id="7_5fugs"]
+[ext_resource type="Texture2D" uid="uid://bvg20nbrjgdf6" path="res://Assets/Tilesets/Images/GUI/inventory-slot.png" id="8_x728t"]
+[ext_resource type="PackedScene" uid="uid://b0c5wum7smycb" path="res://Scenes/Pickups/Items.tscn" id="9_v002h"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_21t8d"]
+radius = 7.5
+height = 20.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mxrhe"]
 draw_center = false
@@ -27,7 +28,9 @@ corner_radius_bottom_right = 5
 corner_radius_bottom_left = 5
 
 [sub_resource type="LabelSettings" id="LabelSettings_qv6ie"]
-shadow_size = 2
+font_size = 15
+font_color = Color(0, 0, 0, 1)
+shadow_size = 6
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_a7kge"]
 bg_color = Color(0.870588, 0, 0, 0.392157)
@@ -148,29 +151,14 @@ corner_radius_bottom_right = 100
 corner_radius_bottom_left = 100
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_p0kfr"]
-radius = 73.0
-height = 166.0
+radius = 52.5
+height = 141.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_qncwt"]
-radius = 18.0
+radius = 10.0499
 
-[node name="Autumn" type="CharacterBody2D" groups=["Autumn", "player"]]
-scale = Vector2(0.4, 0.4)
+[node name="Autumn" type="CharacterBody2D" groups=["player"]]
 wall_min_slide_angle = 0.0
-script = ExtResource("1_jhb8c")
-health = 100.0
-maxHealth = 100.0
-stamina = 100.0
-maxStamina = 100.0
-mana = 100.0
-maxMana = 100.0
-level = 1
-skillPoints = 5
-physicalDamage = 20.0
-magicalDamage = 60.0
-physicalDefense = 2.0
-magicalDefense = 10.0
-speed = 10.0
 
 [node name="Body" type="CollisionShape2D" parent="."]
 visible = false
@@ -178,23 +166,23 @@ position = Vector2(0, 10)
 shape = SubResource("CapsuleShape2D_21t8d")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-texture = ExtResource("2_f4w1s")
+texture = ExtResource("1_plqj8")
 hframes = 19
 vframes = 12
-frame = 21
+frame = 19
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
-"AnimPlayer": ExtResource("3_qyk17"),
-"global": ExtResource("4_nxm5q")
+"AnimPlayer": ExtResource("2_j507a"),
+"global": ExtResource("3_3k5r7")
 }
 
 [node name="AnimationTree" type="AnimationTree" parent="."]
 libraries = {
-"AnimPlayer": ExtResource("3_qyk17"),
-"global": ExtResource("4_nxm5q")
+"AnimPlayer": ExtResource("2_j507a"),
+"global": ExtResource("3_3k5r7")
 }
-tree_root = ExtResource("4_kylpv")
+tree_root = ExtResource("4_l5vyd")
 anim_player = NodePath("../AnimationPlayer")
 parameters/conditions/Combat = false
 parameters/conditions/Idle = false
@@ -210,6 +198,7 @@ parameters/VoidPunch/blend_position = Vector2(-0.36788, -1.15823)
 parameters/Walking/blend_position = Vector2(0, -0.643)
 
 [node name="Camera2D" type="Camera2D" parent="."]
+enabled = false
 zoom = Vector2(6, 6)
 limit_top = 3
 
@@ -231,7 +220,7 @@ autostart = true
 
 [node name="UI" type="CanvasLayer" parent="." groups=["UI"]]
 
-[node name="Character Sheet" parent="UI" node_paths=PackedStringArray("player") instance=ExtResource("5_jeshq")]
+[node name="Character Sheet" parent="UI" node_paths=PackedStringArray("player") instance=ExtResource("5_ate0t")]
 visible = false
 player = NodePath("../..")
 
@@ -361,21 +350,21 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-script = ExtResource("7_5v0a8")
+script = ExtResource("6_pw1fm")
 
 [node name="TouchScreenButton" type="TouchScreenButton" parent="UI/Touch Screen Buttons"]
 position = Vector2(712, 4)
 scale = Vector2(0.27947, 0.305556)
-texture_normal = ExtResource("7_pobbp")
+texture_normal = ExtResource("7_5fugs")
 visibility_mode = 1
 
 [node name="TouchScreenButton2" type="TouchScreenButton" parent="UI/Touch Screen Buttons"]
 position = Vector2(592, 8)
 scale = Vector2(5.5625, 5.6875)
-texture_normal = ExtResource("8_4k6sv")
+texture_normal = ExtResource("8_x728t")
 visibility_mode = 1
 
-[node name="Items" parent="UI" node_paths=PackedStringArray("player") instance=ExtResource("9_q18p5")]
+[node name="Items" parent="UI" node_paths=PackedStringArray("player") instance=ExtResource("9_v002h")]
 visible = false
 player = NodePath("../..")
 

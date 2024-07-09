@@ -31,6 +31,8 @@ var healthPotion: int = 1
 var staminaPotion: int = 1
 var manaPotion: int = 1
 
+var followTama: bool = false
+
 #endregion
 
 
@@ -58,7 +60,7 @@ func _physics_process(delta):
 
 func _input(_event):
 	CharacterSheet()
-	ItemsList()
+	#ItemsList()
 
 @onready var health_bar = $"UI/Profile/Health Bar"
 @onready var stamina_bar = $"UI/Profile/Stamina Bar"
@@ -71,7 +73,7 @@ func _input(_event):
 @onready var mana_label = $"UI/Profile/Mana Bar/Mana Label"
 
 func UIProcess():
-	level_label.text = "Level: " + str(level)
+	level_label.text = "Name: Autumn" + "\n" + "Level: " + str(level)
 	health_bar.value = health
 	health_bar.max_value = maxHealth
 	health_label.text = str(health) + "/" + str(maxHealth)
@@ -98,6 +100,7 @@ enum {
 	IDLE,
 	WANDER,
 	COMBAT,
+	FOLLOWTAMA,
 }
 
 
@@ -114,6 +117,8 @@ func StateMachine():
 		COMBAT:
 			#print("Combat")
 			Combat()
+		FOLLOWTAMA:
+			FollowTama()
 
 
 #endregion
@@ -137,8 +142,11 @@ func Idle():
 
 func IdleTimeout():
 	if currentState != COMBAT:
-		currentState = WANDER
-		StateMachine()
+		if followTama == true:
+			currentState = FOLLOWTAMA
+		else:
+			currentState = WANDER
+	StateMachine()
 
 
 func Wander():
@@ -149,7 +157,12 @@ func Wander():
 			if marker and marker.global_position not in VisitedArray:
 				VisionArraymarker = marker
 				break
-		if VisionArraymarker:
+		if VisionArraymarker.is_in_group("TamanekoPlaced"):
+			print("OMW Tama!")
+			NavAgent.target_position = VisionArraymarker.global_position
+			VisitedArray.append(VisionArraymarker)
+			VisionArray.erase(VisionArraymarker)
+		elif VisionArraymarker:
 			NavAgent.target_position = VisionArraymarker.global_position
 			VisitedArray.append(VisionArraymarker)
 			VisionArray.erase(VisionArraymarker)
@@ -182,7 +195,7 @@ func Wander():
 
 
 func MakePath():
-	if currentState == WANDER:
+	if currentState == WANDER or currentState == FOLLOWTAMA:
 		direction = to_local(NavAgent.get_next_path_position()).normalized()
 		velocity = direction * speed
 		SetWalking(true)
@@ -190,11 +203,6 @@ func MakePath():
 		if NavAgent.distance_to_target() <= 10:
 			currentState = IDLE
 			StateMachine()
-	#elif currentState == COMBAT:
-		#direction = to_local(NavAgent.get_next_path_position()).normalized()
-		#velocity = -direction * speed
-		##SetWalking(true)
-		##UpdateBlend()
 
 
 func Visual(area):
@@ -219,40 +227,29 @@ var enemytarget
 func Combat():
 	for enemy in EnemyArray:
 		if enemy != null:
-			if enemy.is_in_group("enemy"):
-				enemytarget = enemy
-				direction = enemytarget.global_position
-				NavAgent.target_position = enemytarget.global_position
-				velocity = Vector2.ZERO
-				if enemytarget.health <= 0:
+			followTama = false
+			enemytarget = enemy
+			direction = enemytarget.global_position
+			NavAgent.target_position = enemytarget.global_position
+			velocity = Vector2.ZERO
+			if enemytarget.health <= 0:
+				enemytarget = null
+			if enemytarget != null:
+				var distance_to_enemy = NavAgent.distance_to_target()
+				if mana >= 20:
+					print("Firing Bolt")
+					direction = enemytarget.global_position
+					velocity = Vector2.ZERO
+					VoidBolt(true)
+					UpdateBlend()
+				elif distance_to_enemy < 30 and mana < 20:
+					SwingVoidPunch()
+					UpdateBlend()
+				elif enemy == null:
 					enemytarget = null
-				if enemytarget != null:
-					var distance_to_enemy = NavAgent.distance_to_target()
-					if distance_to_enemy >= 100 and mana >= 20:
-						direction = enemytarget.global_position
-						velocity = Vector2.ZERO
-						VoidBolt(true)
-						UpdateBlend()
-						print(mana)
-					elif distance_to_enemy > 30 and mana < 20:
-						await AnimTree.animation_finished
-						direction = (NavAgent.get_next_path_position() - global_position).normalized()
-						velocity = direction * speed
-						SetWalking(true)
-						UpdateBlend()
-					elif distance_to_enemy <= 20 and mana < 20:
-						VoidBolt(false)
-						await AnimTree.animation_finished
-						SwingVoidPunch()
-						UpdateBlend()
-					if enemytarget.health <= 0:
-						enemytarget = null
-						velocity = Vector2.ZERO
-						VoidBolt(false)
-						await AnimTree.animation_finished
-						currentState = IDLE
-						StateTimer.start(0.2)
-				StateTimer.start(2)
+					currentState = IDLE
+					StateTimer.start(0.5)
+			StateTimer.start(0.8)
 
 
 func SwingVoidPunch():
@@ -270,7 +267,7 @@ func FireVoidBolt():
 			VoidBolt(false)
 			currentState = IDLE
 			StateTimer.start(0.8)
-		if enemytarget != null:
+		elif enemytarget != null:
 			velocity = Vector2.ZERO
 			direction = enemytarget.position
 			StateTimer.start(0.5)
@@ -280,11 +277,6 @@ func FireVoidBolt():
 			var enemydirection = (enemytarget.global_position - global_position).normalized()
 			vbolt.velocity = enemydirection * vbolt.speed
 			mana -= 20
-			if enemytarget == null:
-				velocity = Vector2.ZERO
-				VoidBolt(false)
-				currentState = IDLE
-				StateTimer.start(0.8)
 	else:
 		StateTimer.start(0.5)
 
@@ -297,6 +289,15 @@ func TakeDamage(area):
 
 
 #endregion
+
+
+
+@onready var Tamaneko = get_tree().get_first_node_in_group("Tamaneko")
+func FollowTama():
+	if followTama == true:
+		print("OMW Tama!")
+		NavAgent.target_position = Tamaneko.global_position
+		StateTimer.start(5)
 
 
 #region Items
@@ -396,7 +397,6 @@ func CharacterSheet():
 
 @onready var items = $UI/Items
 func ItemsList():
-	if Input.is_action_just_pressed("Inventory"):
 		if items.visible:
 			items.hide()
 		else:

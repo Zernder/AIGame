@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://biluq0nsfvohy"
-path="res://.godot/imported/tempspritesheet.png-5995ce414ea975d73a5a66061f5aa13b.ctex"
+uid="uid://ci0cr25g0bedx"
+path="res://.godot/imported/Tamaneko3.png-efb6294364875292ab337238379a15bf.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/AutumnSakilera/tempspritesheet.png"
-dest_files=["res://.godot/imported/tempspritesheet.png-5995ce414ea975d73a5a66061f5aa13b.ctex"]
+source_file="res://Assets/FuyukiTamaneko/Spritesheets/Tamaneko3.png"
+dest_files=["res://.godot/imported/Tamaneko3.png-efb6294364875292ab337238379a15bf.ctex"]
 
 [params]
 

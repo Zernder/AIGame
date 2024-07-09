@@ -50,6 +50,6 @@ func Knockback(enemy, _area, reverse: bool = false):
 	if reverse:
 		pushback = -pushback
 	var KnockbackTween = create_tween()
-	if enemy.is_inside_tree() and enemy != null:
+	if enemy != null:
 		KnockbackTween.tween_property(enemy, "position", enemy.position + pushback, 0.2)
 
