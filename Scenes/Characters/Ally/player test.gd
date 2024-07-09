@@ -1,26 +1,29 @@
 class_name PlayerTestScene extends CharacterBody2D
 
-class banana extends PlayerTestScene:
-	pass
 
 #region The Variables
 
+@export_category("Stats")
 @export var health: float
 @export var maxHealth: float
 @export var level: int
-@export var damage: float
+
+@export var physicalDamage: float
+@export var magicalDamage: float
+@export var physicalDefense: float
+@export var magicalDefense: float
+
 @export var speed: float
 @onready var currentxp: int = 0
 @onready var requiredxp: int = 1 * level
-@onready var vision: Array = []
-@onready var memory: Array = []
 
+@onready var VisionArray: Array = []
+@onready var MemoryArray: Array = []
+@onready var EnemyArray: Array = []
 
 @onready var tilemap = $"../TileMap"
 var direction: Vector2
-var DetectedArray: Array = []
 @onready var NavAgent = $NavigationAgent2D
-
 
 #endregion
 
@@ -40,12 +43,14 @@ func _process(_delta):
 	UIProcess()
 	LevelUp()
 
+
 func _physics_process(delta):
 	Death()
 	var collision = move_and_collide(velocity * delta)
 	if collision:
 		Idle()
 		UpdateBlend()
+
 
 func UIProcess():
 	$UI/Profile/Healthbar.max_value = maxHealth
@@ -76,16 +81,14 @@ var currentState
 func StateMachine():
 	match currentState:
 		IDLE:
-			#print("Idle")
+			print("Idle")
 			Idle()
 		WANDER:
 			print("Wander")
 			Wander()
 		COMBAT:
-			#print("Combat")
+			print("Combat")
 			Combat()
-	#if currentState == IDLE:
-		#currentState = WANDER
 
 
 #endregion
@@ -94,7 +97,7 @@ func StateMachine():
 #region Idle and Wander
 
 
-var IdleTime = randf_range(1, 8)
+var IdleTime = randf_range(1, 3)
 @onready var poi = $"../POI"
 @onready var idle_timer = $Timers/IdleTimer
 
@@ -103,37 +106,59 @@ func Idle():
 	SetWalking(false)
 	UpdateBlend()
 	idle_timer.start(IdleTime)
-	print(idle_timer.time_left)
 
 
 func IdleTimeout():
-	currentState = WANDER
-	StateMachine()
+	if currentState != COMBAT:
+		currentState = WANDER
+		StateMachine()
 
-
+var visitedPositions: Array = []
 var went: bool = false
-func ChooseDirection():
-	pass
-
 func Wander():
-	var visionmarker
-	var memorymarker
-	if !vision.is_empty():
-		vision.shuffle()
-		visionmarker = vision.front()
-		went = true
-		NavAgent.target_position = visionmarker.global_position
-		print(visionmarker)
-		vision.erase(vision.front())
-	elif vision.is_empty() and went == true:
-		memory.shuffle()
-		memorymarker = memory.front()
-		NavAgent.target_position = memorymarker.global_position
-	else:
-		currentState = IDLE
-		StateTimer.start(IdleTime)
-	SetWalking(true)
-	UpdateBlend()
+	var VisionArraymarker
+	var MemoryArraymarker
+	if !VisionArray.is_empty():
+		VisionArray.shuffle()
+		VisionArraymarker = VisionArray.front()
+		if VisionArraymarker.global_position not in visitedPositions:
+			visitedPositions.append(VisionArraymarker.global_position)
+			NavAgent.target_position = VisionArraymarker.global_position
+		else:
+			currentState = IDLE
+			StateMachine()
+		#for marker in VisionArray:
+			#if marker and marker.global_position not in visitedPositions:
+				#VisionArraymarker = marker
+				#break
+		#if VisionArraymarker:
+			#went = true
+			#
+			#VisionArray.erase(VisionArraymarker)
+			#visitedPositions.append(VisionArraymarker.global_position)
+	#elif VisionArray.is_empty() and went == true:
+		#MemoryArray.shuffle()
+		#for marker in MemoryArray:
+			#if marker != null:
+				#if marker and marker.global_position not in visitedPositions:
+					#MemoryArraymarker = marker
+					#break
+		#if MemoryArraymarker:
+			#NavAgent.target_position = MemoryArraymarker.global_position
+			#visitedPositions.append(MemoryArraymarker.global_position)
+		#else:
+			#visitedPositions.shuffle()
+			#for marker in visitedPositions:
+				#if marker and marker.global_position:
+					#MemoryArraymarker = marker
+					#break
+			#if MemoryArraymarker:
+				#NavAgent.target_position = MemoryArraymarker.global_position
+	#else:
+		#currentState = IDLE
+		#StateTimer.start(IdleTime)
+	#SetWalking(true)
+	#UpdateBlend()
 
 
 func MakePath():
@@ -148,16 +173,15 @@ func MakePath():
 
 
 func Visual(area):
-	if area.is_in_group("POI"):
-		vision.append(area)
-		memory.append(area)
-
+	if area.is_in_group("POI") and !MemoryArray.has(area):
+		VisionArray.append(area)
+		MemoryArray.append(area)
 
 func NotVisual(area):
 	if area.is_in_group("POI"):
-		vision.erase(area)
+		VisionArray.erase(area)
 		if area.is_in_group("potion"):
-			memory.erase(area)
+			MemoryArray.erase(area)
 
 #endregion
 
@@ -165,9 +189,9 @@ func NotVisual(area):
 #region Combat
 
 func EnemyDetected(area):
-	if area.get_parent().is_in_group("Enemy"):
+	if area.get_parent().is_in_group("enemy"):
 		var enemy = area.get_parent()
-		DetectedArray.append(enemy)
+		EnemyArray.append(enemy)
 		currentState = COMBAT
 		CombatStance(true)
 		StateMachine()
@@ -175,9 +199,9 @@ func EnemyDetected(area):
 
 var enemytarget
 func Combat():
-	for enemy in DetectedArray:
+	for enemy in EnemyArray:
 		if enemy != null:
-			if enemy.is_in_group("Enemy"):
+			if enemy.is_in_group("enemy"):
 					enemytarget = enemy
 					direction = enemytarget.position
 					if enemytarget.health <= 0:
@@ -190,6 +214,7 @@ func Combat():
 						currentState = IDLE
 		StateTimer.start(0.5)
 
+
 const VOID_BOLT = preload("res://Scenes/Abilities/VoidBolt.tscn")
 func FireVoidBolt():
 	var vbolt = VOID_BOLT.instantiate()
@@ -197,7 +222,7 @@ func FireVoidBolt():
 		velocity = Vector2.ZERO
 		VoidBolt(false)
 		currentState = IDLE
-		StateTimer.start(0.5)
+		StateTimer.start(0.8)
 	if enemytarget != null:
 		direction = enemytarget.position
 		StateTimer.start(0.5)
@@ -209,7 +234,7 @@ func FireVoidBolt():
 
 
 func TakeDamage(area):
-	if area.get_parent().is_in_group("Enemy"):
+	if area.get_parent().is_in_group("enemy"):
 		var enemy = area.get_parent()
 		health -= enemy.damage
 		Knockback(enemy, area)
@@ -225,6 +250,7 @@ func ItemDetection(area):
 	if area.is_in_group("Pickup"):
 		item = area
 		currentState = PICKUP
+
 
 var PotionNearby: bool = false
 var healthpotions: int = 5
@@ -244,9 +270,11 @@ func LevelUp():
 		level += 1
 		maxHealth += 10
 		health = maxHealth
-		damage += 5
+		physicalDamage += 5
+		magicalDamage += 5
 		requiredxp = 100 * level
 		currentxp = 0
+
 
 func Knockback(target, _area, reverse: bool = false):
 	var pushback = (target.global_position - global_position).normalized() * 30
@@ -255,6 +283,7 @@ func Knockback(target, _area, reverse: bool = false):
 	var KnockbackTween = create_tween()
 	if target.is_inside_tree() and target != null:
 		KnockbackTween.tween_property(target, "position", target.position + pushback, 0.2)
+
 
 func Death():
 	if health <= 0:

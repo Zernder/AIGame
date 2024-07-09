@@ -9,11 +9,10 @@ corner_radius_top_right = 100
 corner_radius_bottom_right = 100
 corner_radius_bottom_left = 100
 
-[node name="Slime" groups=["Slime"] instance=ExtResource("1_3iy3e")]
+[node name="Slime" groups=["slime"] instance=ExtResource("1_3iy3e")]
 scale = Vector2(0.2, 0.2)
-health = 60.0
-damage = 3.0
-speed = 5.0
+health = 20.0
+maxHealth = 20.0
 
 [node name="Body" parent="." index="0"]
 visible = false
@@ -25,7 +24,4 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_wq2m7")
 visible = false
 
 [node name="Hurtbox" parent="." index="4"]
-visible = false
-
-[node name="Detectbox" parent="." index="5"]
 visible = false
