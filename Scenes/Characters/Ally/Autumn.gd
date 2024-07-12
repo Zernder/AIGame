@@ -1,94 +1,29 @@
-class_name AutumnScene extends CharacterBody2D
+class_name AutumnScene extends GameStats
 
 
 #region The Variables
 
-@export_category("Stats")
-@export var health: float
-@export var maxHealth: float
-@export var stamina: float
-@export var maxStamina: float
-@export var mana: float
-@export var maxMana: float
-@export var level: int
-@export var skillPoints: int
-
-@export var physicalDamage: float
-@export var magicalDamage: float
-@export var physicalDefense: float
-@export var magicalDefense: float
-
-@export var speed: float
-@onready var currentxp: int = 0
-@onready var requiredxp: int = 1 * level
-
-@onready var EnemyArray: Array = []
-
-var direction: Vector2
-@onready var NavAgent = $NavigationAgent2D
-
-var healthPotion: int = 1
-var staminaPotion: int = 1
-var manaPotion: int = 1
-
+@onready var Tamaneko = get_tree().get_first_node_in_group("Tamaneko")
 var followTama: bool = false
+var DistanceToTama: int = 0
+
 
 #endregion
 
 
 #region The Runtimes
 
-
 func _ready():
 	currentState = IDLE
 	StateMachine()
 	health = maxHealth
 
-
-func _process(_delta):
-	#UsePotion()
-	UIProcess()
-	LevelUp()
-
-
 func _physics_process(delta):
-	Death()
+	super._physics_process(delta)
 	var collision = move_and_collide(velocity * delta)
 	if collision:
 		Idle()
 		UpdateBlend()
-
-func _input(_event):
-	CharacterSheet()
-	#ItemsList()
-
-@onready var health_bar = $"UI/Profile/Health Bar"
-@onready var stamina_bar = $"UI/Profile/Stamina Bar"
-@onready var mana_bar = $"UI/Profile/Mana Bar"
-@onready var expbar = $UI/Profile/Expbar
-
-@onready var level_label = $UI/Profile/LevelLabel
-@onready var health_label = $"UI/Profile/Health Bar/Health Label"
-@onready var stamina_label = $"UI/Profile/Stamina Bar/Stamina Label"
-@onready var mana_label = $"UI/Profile/Mana Bar/Mana Label"
-
-func UIProcess():
-	level_label.text = "Name: Autumn" + "\n" + "Level: " + str(level)
-	health_bar.value = health
-	health_bar.max_value = maxHealth
-	health_label.text = str(health) + "/" + str(maxHealth)
-	
-	stamina_bar.value = stamina
-	stamina_bar.max_value = maxStamina
-	stamina_label.text = str(stamina) + "/" + str(maxStamina)
-	
-	mana_bar.value = mana
-	mana_bar.max_value = maxMana
-	mana_label.text = str(mana) + "/" + str(maxMana)
-	
-	expbar.value = currentxp
-	expbar.max_value = requiredxp
-
 
 
 #endregion
@@ -98,116 +33,115 @@ func UIProcess():
 
 enum {
 	IDLE,
-	WANDER,
+	EXPLORE,
 	COMBAT,
-	FOLLOWTAMA,
+	FOLLOW,
 }
 
 
 var currentState
 @onready var StateTimer = $Timers/StateTimeout
 func StateMachine():
+	Whatif()
 	match currentState:
 		IDLE:
-			#print("Idle")
 			Idle()
-		WANDER:
-			#print("Wander")
-			Wander()
+		EXPLORE:
+			Explore()
+			#print("Explore")
 		COMBAT:
-			#print("Combat")
 			Combat()
-		FOLLOWTAMA:
+		FOLLOW:
 			FollowTama()
 
+
+var ExploreDecision: Array = [EXPLORE, IDLE, IDLE, IDLE]
+func Whatif():
+	if Tamaneko and followTama:
+		currentState = FOLLOW
+	elif !EnemyArray.is_empty():
+		currentState = COMBAT
+		wordsin_speech_bubble.text = "Entering Combat!"
+	else:
+		ExploreDecision.shuffle()
+		var choose = ExploreDecision.front()
+		currentState = choose
 
 #endregion
 
 
-#region Idle and Wander
-
-@onready var VisitedArray: Array = []
-@onready var VisionArray: Array = []
-
-var IdleTime = randf_range(1, 3)
-@onready var poi = $"../POI"
-@onready var idle_timer = $Timers/IdleTimer
-
-func Idle():
-	velocity = Vector2.ZERO
-	SetWalking(false)
-	UpdateBlend()
-	idle_timer.start(0.5)
-
-
-func IdleTimeout():
-	if currentState != COMBAT:
-		if followTama == true:
-			currentState = FOLLOWTAMA
-		else:
-			currentState = WANDER
-	StateMachine()
-
-
-func Wander():
-	var VisionArraymarker
-	var visitedArrayMarker
-	if !VisionArray.is_empty():
-		for marker in VisionArray:
-			if marker and marker.global_position not in VisitedArray:
-				VisionArraymarker = marker
-				break
-		if VisionArraymarker.is_in_group("TamanekoPlaced"):
-			print("OMW Tama!")
-			NavAgent.target_position = VisionArraymarker.global_position
-			VisitedArray.append(VisionArraymarker)
-			VisionArray.erase(VisionArraymarker)
-		elif VisionArraymarker:
-			NavAgent.target_position = VisionArraymarker.global_position
-			VisitedArray.append(VisionArraymarker)
-			VisionArray.erase(VisionArraymarker)
-	elif VisionArray.is_empty():
-		VisitedArray.shuffle()
-		for marker in VisitedArray:
-			if marker and marker.global_position:
-				visitedArrayMarker = marker
-				break
-		if visitedArrayMarker:
-			NavAgent.target_position = visitedArrayMarker.global_position
-		else:
-			VisitedArray.shuffle()
-			for marker in VisitedArray:
-				if marker:
-					visitedArrayMarker = marker
-					break
-			if visitedArrayMarker:
-				NavAgent.target_position = visitedArrayMarker
-	else:
-		var Rest: Array = [IDLE, WANDER, WANDER, WANDER]
-		Rest.shuffle()
-		var ShouldIRest = Rest.front()
-		currentState = ShouldIRest
-		StateTimer.start(0.2)
-		if ShouldIRest == WANDER:
-			pass
-	SetWalking(true)
-	UpdateBlend()
-
+#region Navigation
 
 func MakePath():
-	if currentState == WANDER or currentState == FOLLOWTAMA:
+	if currentState == EXPLORE or currentState == FOLLOW:
 		direction = to_local(NavAgent.get_next_path_position()).normalized()
 		velocity = direction * speed
 		SetWalking(true)
 		UpdateBlend()
 		if NavAgent.distance_to_target() <= 10:
-			currentState = IDLE
 			StateMachine()
+	elif currentState == COMBAT or currentState == IDLE:
+		velocity = Vector2.ZERO
+		SetWalking(false)
+		UpdateBlend()
+
+#endregion
 
 
-func Visual(area):
-	if area.is_in_group("POI") and !VisitedArray.has(area):
-		VisionArray.append(area)
+#region Idle
+
+var IdleTime = randf_range(1, 5)
+@onready var idle_timer = $Timers/IdleTimer
+
+func Idle():
+	SetWalking(false)
+	UpdateBlend()
+	idle_timer.start(IdleTime)
+	wordsin_speech_bubble.text = "Hanging out"
+
+
+func IdleTimeout():
+	StateMachine()
+
+#endregion
+
+
+#region Explore
+
+@onready var wordsin_speech_bubble = $SpeechBubble/WordsinSpeechBubble
+func FollowTama():
+		DistanceToTama = global_position.distance_to(Tamaneko.global_position)
+		NavAgent.target_position = Tamaneko.global_position
+		wordsin_speech_bubble.text = "Following Tama"
+		SetWalking(true)
+		UpdateBlend()
+
+var whichfloor = 1
+var Room
+@onready var waypoints = $"../Waypoints"
+@onready var ExploreArray: Array = []
+@onready var area_one = $"../Waypoints/AreaOne"
+@onready var bedroom_one = $"../Waypoints/BedroomOne"
+
+
+func Explore():
+	ExploreArray.clear()
+	if ExploreArray.is_empty():
+		if whichfloor == 1:
+			Room = area_one
+		elif whichfloor == 2:
+			Room = bedroom_one
+		for child in Room.get_children():
+			if child.is_in_group("POI"):
+				ExploreArray.append(child)
+	ExploreArray.shuffle()
+	var Marker = ExploreArray.pop_back()
+	print(Marker)
+	NavAgent.target_position = Marker.global_position
+	wordsin_speech_bubble.text = "Exploring"
+	ExploreArray.clear()
+	SetWalking(true)
+	UpdateBlend()
 
 #endregion
 
@@ -229,56 +163,60 @@ func Combat():
 		if enemy != null:
 			followTama = false
 			enemytarget = enemy
-			direction = enemytarget.global_position
-			NavAgent.target_position = enemytarget.global_position
-			velocity = Vector2.ZERO
+			var enemyDistance = global_position.distance_to(enemytarget.global_position)
 			if enemytarget.health <= 0:
-				enemytarget = null
-			if enemytarget != null:
-				var distance_to_enemy = NavAgent.distance_to_target()
-				if mana >= 20:
-					print("Firing Bolt")
-					direction = enemytarget.global_position
-					velocity = Vector2.ZERO
-					VoidBolt(true)
-					UpdateBlend()
-				elif distance_to_enemy < 30 and mana < 20:
-					SwingVoidPunch()
-					UpdateBlend()
-				elif enemy == null:
-					enemytarget = null
-					currentState = IDLE
-					StateTimer.start(0.5)
-			StateTimer.start(0.8)
+				EnemyArray.erase(enemytarget)
+				enemytarget.queue_free()
+				StateMachine()
+				break
+			if enemyDistance >= 40 and mana >= 20:
+				wordsin_speech_bubble.text = "Casting Voidbolt!"
+				VoidBolt(true)
+				UpdateBlend()
+				break
+			elif enemyDistance < 40 and enemyDistance > 30 and mana >= 20:
+				wordsin_speech_bubble.text = "Casting Voidbolt!"
+				VoidBolt(true)
+				UpdateBlend()
+				break
+			elif enemyDistance < 30:
+				wordsin_speech_bubble.text = "VOID PUNCH!"
+				SwingVoidPunch()
+				UpdateBlend()
+				break
+			else:
+				StateTimer.start(0.5)
+	if enemytarget == null:
+		EnemyArray.erase(enemytarget)
+		VoidBolt(false)
+		StateTimer.start(0.8)
+		currentState = IDLE
+
 
 
 func SwingVoidPunch():
-	print("Falcon PUNCH!")
-	enemytarget.health -= (physicalDamage - enemytarget.physicalDefense)
-	StateTimer.start(0.5)
+	var enemyDistance = global_position.distance_to(enemytarget.global_position)
+	if enemyDistance < 30:
+		enemytarget.health -= (magicalDamage - enemytarget.physicalDefense)
+		VoidPunch(false)
+		currentState = IDLE
+		StateTimer.start(0.5)
 
 
 const VOID_BOLT = preload("res://Scenes/Abilities/VoidBolt.tscn")
 func FireVoidBolt():
-	if mana >= 20:
-		var vbolt = VOID_BOLT.instantiate()
-		if enemytarget == null:
-			velocity = Vector2.ZERO
-			VoidBolt(false)
-			currentState = IDLE
-			StateTimer.start(0.8)
-		elif enemytarget != null:
-			velocity = Vector2.ZERO
-			direction = enemytarget.position
-			StateTimer.start(0.5)
+	for enemy in EnemyArray:
+		if enemy != null and mana >= 20:
+			direction = global_position.direction_to(enemytarget.global_position)
 			UpdateBlend()
+			var vbolt = VOID_BOLT.instantiate()
 			add_child(vbolt)
-			vbolt.global_position = $".".global_position
+			vbolt.global_position = global_position
 			var enemydirection = (enemytarget.global_position - global_position).normalized()
 			vbolt.velocity = enemydirection * vbolt.speed
 			mana -= 20
-	else:
-		StateTimer.start(0.5)
+			break
+	StateTimer.start(1) 
 
 
 func TakeDamage(area):
@@ -287,65 +225,6 @@ func TakeDamage(area):
 		health -= enemy.physicalDamage
 		Knockback(enemy, area)
 
-
-#endregion
-
-
-
-@onready var Tamaneko = get_tree().get_first_node_in_group("Tamaneko")
-func FollowTama():
-	if followTama == true:
-		print("OMW Tama!")
-		NavAgent.target_position = Tamaneko.global_position
-		StateTimer.start(5)
-
-
-#region Items
-
-#var item
-#func ItemDetection(area):
-	#if area.is_in_group("Pickup"):
-		#item = area
-		#currentState = PICKUP
-
-#var PotionNearby: bool = false
-
-
-#func UsePotion():
-	#if health <= (maxHealth / 2) and healthpotions >= 1:
-		#healthpotions -= 1
-		#health = maxHealth
-		#print("Used Potion!")
-
-#endregion
-
-
-#region other
-
-func LevelUp():
-	if currentxp >= requiredxp:
-		level += 1
-		skillPoints += 5
-		health = maxHealth
-		physicalDamage += 5
-		magicalDamage += 5
-		speed += 1
-		requiredxp = 100 * level
-		currentxp = 0
-
-
-func Knockback(target, _area, reverse: bool = false):
-	var pushback = (target.global_position - global_position).normalized() * 30
-	if reverse:
-		pushback = -pushback
-	var KnockbackTween = create_tween()
-	if target.is_inside_tree() and target != null:
-		KnockbackTween.tween_property(target, "position", target.position + pushback, 0.2)
-
-
-func Death():
-	if health <= 0:
-		get_tree().quit()
 
 #endregion
 
@@ -382,36 +261,5 @@ func UpdateBlend():
 	AnimTree["parameters/VoidPunch/blend_position"] = direction
 
 #endregion
-
-
-#region Character Sheet and UI
-
-@onready var character_sheet = $"UI/Character Sheet"
-func CharacterSheet():
-	if Input.is_action_just_pressed("Character Sheet"):
-		if character_sheet.visible:
-			character_sheet.hide()
-		else:
-			character_sheet.show()
-
-
-@onready var items = $UI/Items
-func ItemsList():
-		if items.visible:
-			items.hide()
-		else:
-			items.show()
-
-
-#endregion
-
-
-func RegenerationTimeout():
-	if mana < maxMana:
-		mana += min(3, maxMana - mana)
-	if health < maxHealth:
-		health += min(1, maxHealth - health)
-	if stamina < maxStamina:
-		stamina += min(10, maxStamina - stamina)
 
 

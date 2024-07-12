@@ -4,85 +4,55 @@ extends CharacterBody2D
 #region The Variables
 
 @export_category("Stats")
-@export var health: float
-@export var maxHealth: float
-@export var stamina: float
-@export var maxStamina: float
-@export var mana: float
-@export var maxMana: float
-@export var level: int
-@export var skillPoints: int
+@export var health: float = 100
+@export var maxHealth: float = 100
+@export var stamina: float = 120
+@export var maxStamina: float = 120
+@export var mana: float = 100
+@export var maxMana: float = 100
+@export var level: int = 1
+@export var skillPoints: int = 5
 
-@export var physicalDamage: float
-@export var magicalDamage: float
-@export var physicalDefense: float
-@export var magicalDefense: float
+@export var physicalDamage: float = 10
+@export var magicalDamage: float = 5
+@export var physicalDefense: float = 3
+@export var magicalDefense: float = 3
 
-@export var speed: float
+@export var speed: float = 10
 @onready var currentxp: int = 0
 @onready var requiredxp: int = 1 * level
 
 var direction: Vector2
 
-var healthPotion: int = 1
-var staminaPotion: int = 1
-var manaPotion: int = 1
+@onready var Autumn = get_tree().get_first_node_in_group("Autumn")
+
 
 #endregion
 
 
 #region The Runtimes
 
-
 func _ready():
 	pass
 
 
 func _process(_delta):
-	UIProcess()
 	LevelUp()
 
 
-func _physics_process(delta):
+func _physics_process(_delta):
 	Movement()
 	Death()
 	move_and_slide()
 
+
 func _input(_event):
-	ComeHere()
-
-
-
-@onready var health_bar = $"UI/Profile/Health Bar"
-@onready var stamina_bar = $"UI/Profile/Stamina Bar"
-@onready var mana_bar = $"UI/Profile/Mana Bar"
-@onready var expbar = $UI/Profile/Expbar
-
-@onready var level_label = $UI/Profile/LevelLabel
-@onready var health_label = $"UI/Profile/Health Bar/Health Label"
-@onready var stamina_label = $"UI/Profile/Stamina Bar/Stamina Label"
-@onready var mana_label = $"UI/Profile/Mana Bar/Mana Label"
-
-func UIProcess():
-	level_label.text = "Name: Fuyuki" + "\n" + "Level: " + str(level)
-	health_bar.value = health
-	health_bar.max_value = maxHealth
-	health_label.text = str(health) + "/" + str(maxHealth)
-	
-	stamina_bar.value = stamina
-	stamina_bar.max_value = maxStamina
-	stamina_label.text = str(stamina) + "/" + str(maxStamina)
-	
-	mana_bar.value = mana
-	mana_bar.max_value = maxMana
-	mana_label.text = str(mana) + "/" + str(maxMana)
-	
-	expbar.value = currentxp
-	expbar.max_value = requiredxp
-
+	Commands()
 
 #endregion
 
+
+#region Movement
 
 func Movement():
 	direction = Input.get_vector("ui_left","ui_right","ui_up","ui_down")
@@ -94,22 +64,10 @@ func Movement():
 		SetWalking(true)
 		UpdateBlend()
 
-@onready var Autumn = get_tree().get_first_node_in_group("Autumn")
-func ComeHere():
-	if Input.is_action_just_pressed("FollowTama"):
-		if Autumn.followTama == false:
-			print("Come here Autumn!")
-			Autumn.followTama = true
-			print(Autumn)
-			Autumn.currentState = Autumn.FOLLOWTAMA
-		else:
-			print("Nvm Autumn")
-			Autumn.followTama = false
-			Autumn.currentState = Autumn.IDLE
-			Autumn.StateMachine()
+#endregion
+
 
 #region Animations
-
 
 @onready var AnimTree = $AnimationTree
 @onready var AnimPlayer = $AnimationPlayer
@@ -134,29 +92,14 @@ func UpdateBlend():
 #endregion
 
 
-#region Character Sheet and UI
-
-@onready var character_sheet = $"UI/Character Sheet"
-func CharacterSheet():
-	if Input.is_action_just_pressed("Character Sheet") and Autumn.global_position <= 5:
-		if character_sheet.visible:
-			character_sheet.hide()
+func Commands():
+	if Input.is_action_just_pressed("FollowTama"):
+		if Autumn.followTama == false:
+			print("Come to me Autumn!")
+			Autumn.followTama = true
 		else:
-			character_sheet.show()
-	elif Input.is_action_just_pressed("Character Sheet") and Autumn.global_position >= 5:
-		ItemsList()
+			Autumn.followTama = false
 
-
-@onready var items = $UI/Items
-func ItemsList():
-	if Input.is_action_just_pressed("Inventory"):
-		if items.visible:
-			items.hide()
-		else:
-			items.show()
-
-
-#endregion
 
 
 #region other
@@ -195,4 +138,6 @@ func Death():
 	if health <= 0:
 		get_tree().quit()
 
+
 #endregion
+

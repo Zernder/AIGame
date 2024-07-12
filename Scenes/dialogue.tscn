@@ -1,0 +1,58 @@
+[gd_scene load_steps=3 format=3 uid="uid://dchpmxy562qax"]
+
+[ext_resource type="Texture2D" uid="uid://bhkmaxrd8arw1" path="res://Assets/AutumnSakilera/AutumnIcon.png" id="1_qijhl"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ohuso"]
+bg_color = Color(0, 0, 0, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0.286275, 0.00784314, 0.305882, 1)
+border_blend = true
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[node name="Dialogue" type="Control"]
+custom_minimum_size = Vector2(800, 200)
+layout_mode = 3
+anchor_top = 0.666667
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 200.0
+grow_horizontal = 2
+grow_vertical = 0
+metadata/_edit_use_anchors_ = true
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_ohuso")
+
+[node name="TextureRect" type="TextureRect" parent="Panel"]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 0
+anchor_top = 0.235
+anchor_right = 0.1875
+anchor_bottom = 0.985
+texture = ExtResource("1_qijhl")
+expand_mode = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Panel"]
+layout_mode = 0
+anchor_left = 0.22
+anchor_top = 0.325
+anchor_right = 0.99375
+anchor_bottom = 0.975
+theme_override_colors/default_color = Color(1, 0.745098, 0, 1)
+theme_override_font_sizes/normal_font_size = 55
+text = "I am on the Way Tama!"
+fit_content = true
+metadata/_edit_use_anchors_ = true

@@ -1,27 +1,35 @@
-class_name Mazeone extends Node2D
+class_name FloorOne extends Node2D
 
 
-var agrid: AStarGrid2D
-@onready var tile_map = $TileMap
+@onready var player = get_tree().get_first_node_in_group("player")
+@onready var label = $LevelUI/Panel/Label
+@onready var slimes = $Slimes
+@onready var room_1_marker = $Waypoints/AreaOne/F1R1/Room1Marker
+@onready var room_2_marker = $Waypoints/BedroomOne/F1R1Exit/Room2Marker
 
 
-
-func  _ready():
-	agrid = AStarGrid2D.new()
-	agrid.region = tile_map.get_used_rect()
-	agrid.cell_size = Vector2(16,16)
-	agrid.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER
-	agrid.update()
-	print(agrid.cell_size)
-	print(agrid.region)
+func _process(_delta):
+	#WinGame()
+	pass
 
 
-func _input(event):
-	if event.is_action_pressed("PlaceBeacon") == false:
-		return
+func WinGame():
+	label.text = "Enemies Left: " + str(slimes.get_child_count())
+	if slimes.get_child_count() == 0:
+		get_tree().change_scene_to_file("res://Scenes/Menus/WinScreen.tscn")
 
-	var idpath = agrid.get_id_path(
-		tile_map.local_to_map(global_position),
-		tile_map.local_to_map(get_global_mouse_position())
-	)
-	print(idpath)
+
+func R1Entered(body):
+	if body.is_in_group("player"):
+		player.global_position = room_1_marker.global_position
+		player.whichfloor = 2
+		player.currentState = player.IDLE
+		player.StateMachine()
+
+
+func R1Exited(body):
+	if body.is_in_group("player"):
+		player.global_position = room_2_marker.global_position
+		player.whichfloor = 1
+		player.currentState = player.IDLE
+		player.StateMachine()

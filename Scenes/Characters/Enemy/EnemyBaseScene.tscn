@@ -21,11 +21,13 @@ radius = 22.0
 radius = 180.0
 
 [node name="Enemy" type="CharacterBody2D" groups=["enemy"]]
+collision_layer = 514
+collision_mask = 577
 motion_mode = 1
 wall_min_slide_angle = 0.0
 script = ExtResource("1_qqbmt")
-health = 40.0
-maxHealth = 40.0
+health = 100.0
+maxHealth = 100.0
 level = 1
 physicalDamage = 5.0
 physicalDefense = 5.0
@@ -33,6 +35,7 @@ magicalDefense = 5.0
 speed = 5.0
 
 [node name="Body" type="CollisionShape2D" parent="."]
+visible = false
 light_mask = 65
 visibility_layer = 65
 position = Vector2(0, -0.5)
@@ -64,25 +67,28 @@ one_shot = true
 wait_time = 0.2
 autostart = true
 
-[node name="Hitbox" type="Area2D" parent="." groups=["EnemyHitbox"]]
+[node name="Areas" type="Node2D" parent="."]
+visible = false
+
+[node name="Hitbox" type="Area2D" parent="Areas" groups=["EnemyHitbox"]]
 collision_layer = 16
 collision_mask = 32
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Areas/Hitbox"]
 shape = SubResource("CircleShape2D_1nks0")
 
-[node name="Hurtbox" type="Area2D" parent="."]
+[node name="Hurtbox" type="Area2D" parent="Areas"]
 collision_layer = 32
 collision_mask = 16
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Areas/Hurtbox"]
 shape = SubResource("CircleShape2D_gvqdj")
 
-[node name="Detectbox" type="Area2D" parent="."]
-collision_layer = 2
-collision_mask = 2
+[node name="Detectbox" type="Area2D" parent="Areas"]
+collision_layer = 64
+collision_mask = 3
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Detectbox"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Areas/Detectbox"]
 shape = SubResource("CircleShape2D_ofrvu")
 
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
@@ -95,8 +101,5 @@ debug_enabled = true
 [connection signal="timeout" from="Timers/StateTimer" to="." method="_on_state_timeout_timeout"]
 [connection signal="timeout" from="Timers/IdleTimer" to="." method="IdleTimeout"]
 [connection signal="timeout" from="Timers/MakePath" to="." method="MakePath"]
-[connection signal="area_entered" from="Hurtbox" to="." method="_on_hurtbox_area_entered"]
-[connection signal="area_entered" from="Detectbox" to="." method="Visual"]
-[connection signal="area_entered" from="Detectbox" to="." method="EnemyDetected"]
-[connection signal="area_exited" from="Detectbox" to="." method="EnemyLost"]
-[connection signal="area_exited" from="Detectbox" to="." method="NotVisual"]
+[connection signal="area_entered" from="Areas/Hurtbox" to="." method="_on_hurtbox_area_entered"]
+[connection signal="area_entered" from="Areas/Detectbox" to="." method="EnemyDetected"]

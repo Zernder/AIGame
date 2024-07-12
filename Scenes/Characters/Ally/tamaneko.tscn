@@ -13,15 +13,11 @@ health = 80.0
 maxHealth = 80.0
 stamina = 100.0
 maxStamina = 100.0
-mana = 100.0
-maxMana = 100.0
-level = 1
-skillPoints = 5
 physicalDamage = 40.0
 magicalDamage = 10.0
 physicalDefense = 5.0
 magicalDefense = 5.0
-speed = 20.0
+speed = 60.0
 
 [node name="Sprite2D" parent="." index="1"]
 texture = ExtResource("3_3x56m")
@@ -49,24 +45,6 @@ parameters/Secondary/blend_position = Vector2(0, 0)
 [node name="Camera2D" parent="." index="4"]
 enabled = true
 zoom = Vector2(4, 4)
-
-[node name="Profile" parent="UI" index="1"]
-custom_minimum_size = Vector2(300, 250)
-anchors_preset = 2
-anchor_left = 0.0
-anchor_top = 1.0
-anchor_right = 0.0
-anchor_bottom = 1.0
-offset_top = -250.0
-offset_right = 300.0
-offset_bottom = 0.0
-grow_horizontal = 1
-
-[node name="LevelLabel" parent="UI/Profile" index="0"]
-anchor_left = 0.374449
-anchor_top = 0.00858361
-anchor_right = 0.629956
-anchor_bottom = 0.107295
 
 [node name="Areas" parent="." index="8"]
 visible = false
