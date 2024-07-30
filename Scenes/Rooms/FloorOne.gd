@@ -9,7 +9,7 @@ class_name FloorOne extends Node2D
 
 
 func _process(_delta):
-	#WinGame()
+	WinGame()
 	pass
 
 

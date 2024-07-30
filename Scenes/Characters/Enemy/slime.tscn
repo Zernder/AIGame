@@ -20,5 +20,8 @@ magicalDamage = 5.0
 [node name="Panel" parent="." index="1"]
 theme_override_styles/panel = SubResource("StyleBoxFlat_wq2m7")
 
+[node name="Detectbox" parent="Areas" index="2"]
+collision_mask = 1
+
 [node name="NavigationAgent2D" parent="." index="4"]
 debug_enabled = false

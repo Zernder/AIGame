@@ -25,11 +25,16 @@ func _physics_process(delta):
 		Idle()
 		UpdateBlend()
 
+func _input(event):
+	CharacterSheet()
+
 
 #endregion
 
 
 #region StateMachine
+
+#region Setup
 
 enum {
 	IDLE,
@@ -55,7 +60,7 @@ func StateMachine():
 			FollowTama()
 
 
-var ExploreDecision: Array = [EXPLORE, IDLE, IDLE, IDLE]
+var ExploreDecision: Array = [EXPLORE, EXPLORE, IDLE,]
 func Whatif():
 	if Tamaneko and followTama:
 		currentState = FOLLOW
@@ -70,27 +75,11 @@ func Whatif():
 #endregion
 
 
-#region Navigation
-
-func MakePath():
-	if currentState == EXPLORE or currentState == FOLLOW:
-		direction = to_local(NavAgent.get_next_path_position()).normalized()
-		velocity = direction * speed
-		SetWalking(true)
-		UpdateBlend()
-		if NavAgent.distance_to_target() <= 10:
-			StateMachine()
-	elif currentState == COMBAT or currentState == IDLE:
-		velocity = Vector2.ZERO
-		SetWalking(false)
-		UpdateBlend()
-
-#endregion
-
+#region States
 
 #region Idle
 
-var IdleTime = randf_range(1, 5)
+var IdleTime = randf_range(1, 3)
 @onready var idle_timer = $Timers/IdleTimer
 
 func Idle():
@@ -169,17 +158,12 @@ func Combat():
 				enemytarget.queue_free()
 				StateMachine()
 				break
-			if enemyDistance >= 40 and mana >= 20:
+			if enemyDistance >= 30 and mana >= 20:
 				wordsin_speech_bubble.text = "Casting Voidbolt!"
 				VoidBolt(true)
 				UpdateBlend()
 				break
-			elif enemyDistance < 40 and enemyDistance > 30 and mana >= 20:
-				wordsin_speech_bubble.text = "Casting Voidbolt!"
-				VoidBolt(true)
-				UpdateBlend()
-				break
-			elif enemyDistance < 30:
+			elif enemyDistance < 10:
 				wordsin_speech_bubble.text = "VOID PUNCH!"
 				SwingVoidPunch()
 				UpdateBlend()
@@ -188,6 +172,7 @@ func Combat():
 				StateTimer.start(0.5)
 	if enemytarget == null:
 		EnemyArray.erase(enemytarget)
+		CombatStance(false)
 		VoidBolt(false)
 		StateTimer.start(0.8)
 		currentState = IDLE
@@ -228,6 +213,28 @@ func TakeDamage(area):
 
 #endregion
 
+#endregion
+
+#endregion
+
+
+#region Navigation
+
+func MakePath():
+	if currentState == EXPLORE or currentState == FOLLOW:
+		direction = to_local(NavAgent.get_next_path_position()).normalized()
+		velocity = direction * speed
+		SetWalking(true)
+		UpdateBlend()
+		if NavAgent.distance_to_target() <= 10:
+			StateMachine()
+	elif currentState == COMBAT or currentState == IDLE:
+		velocity = Vector2.ZERO
+		SetWalking(false)
+		UpdateBlend()
+
+#endregion
+
 
 #region Animations
 
@@ -252,13 +259,35 @@ func VoidBolt(value: bool):
 func CombatStance(value: bool):
 	AnimTree["parameters/conditions/Combat"] = value
 
-
 func UpdateBlend():
 	AnimTree["parameters/Idle/blend_position"] = direction
 	AnimTree["parameters/Walking/blend_position"] = direction
 	AnimTree["parameters/CombatStance/blend_position"] = direction
 	AnimTree["parameters/VoidBolt/blend_position"] = direction
 	AnimTree["parameters/VoidPunch/blend_position"] = direction
+
+#endregion
+
+
+#region Character Sheet
+
+@onready var character_sheet = $"UI/Character Sheet"
+var mouseEntered: bool = false
+func MouseEntered():
+	mouseEntered = true
+	print(mouseEntered)
+
+func MouseExited():
+	mouseEntered = false
+	print(mouseEntered)
+
+func CharacterSheet():
+	if Input.is_action_just_pressed("LeftClick") and mouseEntered == true:
+		if character_sheet.visible:
+			character_sheet.hide()
+		else:
+			character_sheet.show()
+
 
 #endregion
 

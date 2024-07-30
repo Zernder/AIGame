@@ -46,12 +46,12 @@ metadata/_edit_use_anchors_ = true
 [node name="Play Again" type="Button" parent="Panel"]
 custom_minimum_size = Vector2(250, 100)
 layout_mode = 0
-offset_left = 238.0
-offset_top = 435.0
-offset_right = 583.0
-offset_bottom = 535.0
+offset_left = 236.0
+offset_top = 307.0
+offset_right = 581.0
+offset_bottom = 407.0
 theme_override_styles/normal = SubResource("StyleBoxFlat_cdkut")
-text = "Exit"
+text = "Retry"
 
 [node name="Exit" type="Button" parent="Panel"]
 custom_minimum_size = Vector2(250, 100)
@@ -63,5 +63,5 @@ offset_bottom = 535.0
 theme_override_styles/normal = SubResource("StyleBoxFlat_cdkut")
 text = "Exit"
 
-[connection signal="pressed" from="Panel/Play Again" to="." method="_on_play_again_pressed"]
+[connection signal="pressed" from="Panel/Play Again" to="." method="PlayAgainPressed"]
 [connection signal="pressed" from="Panel/Exit" to="." method="_on_exit_pressed"]

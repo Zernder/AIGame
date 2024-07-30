@@ -5,6 +5,10 @@ extends Control
 @export var inventory: Control
 @export var CharacterScreen: Control
 
+func _ready():
+	pass
+
+
 func CharacterScreenPressed():
 	if CharacterScreen.visible:
 		CharacterScreen.hide()

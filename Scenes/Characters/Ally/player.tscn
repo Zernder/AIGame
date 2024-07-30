@@ -33,7 +33,7 @@ shape = SubResource("CapsuleShape2D_21t8d")
 texture = ExtResource("1_plqj8")
 hframes = 19
 vframes = 12
-frame = 19
+frame = 21
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
@@ -95,6 +95,7 @@ path_desired_distance = 10.0
 path_max_distance = 15.0
 navigation_layers = 3
 path_postprocessing = 1
+debug_enabled = true
 
 [node name="Areas" type="Node2D" parent="."]
 

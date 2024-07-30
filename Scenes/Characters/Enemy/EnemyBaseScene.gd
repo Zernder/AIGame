@@ -57,12 +57,15 @@ func IdleTimeout():
 
 
 @onready var waypoints = $"../../Waypoints"
+@onready var bedroom_one = $"../../Waypoints/BedroomOne"
+@onready var area_one = $"../../Waypoints/AreaOne"
+
 @onready var ExploreArray: Array = []
 
 func Explore():
 	ExploreArray.clear()
 	if ExploreArray.is_empty():
-		for child in waypoints.get_children():
+		for child in bedroom_one.get_children():
 			if child.is_in_group("POI"):
 				ExploreArray.append(child)
 	ExploreArray.shuffle()
@@ -89,7 +92,6 @@ func Combat():
 		if i.is_in_group("player"):
 			var target = i.global_position
 			NavAgent.target_position = target
-			print(global_position.distance_to(i.global_position))
 			break
 
 
