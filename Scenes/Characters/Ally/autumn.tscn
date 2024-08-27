@@ -1,0 +1,86 @@
+[gd_scene load_steps=5 format=3 uid="uid://bsm0alolb3uhj"]
+
+[ext_resource type="PackedScene" uid="uid://cr05ix60wg2l6" path="res://Scenes/Characters/Ally/player.tscn" id="1_0p0rk"]
+[ext_resource type="Script" path="res://Scenes/Characters/Ally/Autumn.gd" id="2_3oant"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lkius"]
+bg_color = Color(0, 0, 0, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0.286275, 0.00784314, 0.305882, 1)
+border_blend = true
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="LabelSettings" id="LabelSettings_8508r"]
+
+[node name="Autumn" groups=["Autumn"] instance=ExtResource("1_0p0rk")]
+input_pickable = true
+script = ExtResource("2_3oant")
+health = 100.0
+maxHealth = 100.0
+stamina = 100.0
+maxStamina = 100.0
+mana = 100.0
+maxMana = 100.0
+level = 1
+skillPoints = 5
+physicalDamage = 5.0
+magicalDamage = 60.0
+physicalDefense = 5.0
+magicalDefense = 5.0
+speed = 10.0
+
+[node name="Sprite2D" parent="." index="1"]
+frame = 22
+
+[node name="Camera2D" parent="." index="4"]
+enabled = true
+zoom = Vector2(5, 5)
+
+[node name="Character Sheet" parent="UI" index="0"]
+mouse_filter = 2
+
+[node name="Touch Screen Buttons" parent="UI" index="1"]
+visible = false
+
+[node name="NavigationAgent2D" parent="." index="7"]
+debug_enabled = false
+
+[node name="Areas" parent="." index="8"]
+visible = false
+
+[node name="SpeechBubble" type="Panel" parent="." index="9"]
+custom_minimum_size = Vector2(100, 20)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -60.0
+offset_top = -68.0
+offset_right = 66.0
+offset_bottom = -19.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_lkius")
+
+[node name="WordsinSpeechBubble" type="Label" parent="SpeechBubble" index="0"]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = -0.0681818
+anchor_right = 1.0
+anchor_bottom = 0.931818
+grow_horizontal = 2
+grow_vertical = 2
+label_settings = SubResource("LabelSettings_8508r")
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+metadata/_edit_use_anchors_ = true
+
+[connection signal="mouse_entered" from="." to="." method="MouseEntered"]
+[connection signal="mouse_exited" from="." to="." method="MouseExited"]
+[connection signal="mouse_entered" from="Areas/Detectbox" to="." method="MouseEntered"]

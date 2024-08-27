@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://cgiel11mei4t0"]
+
+[ext_resource type="PackedScene" uid="uid://kc053xyxonb5" path="res://Scenes/Pickups/Potion.tscn" id="1_6j81s"]
+
+[node name="Mana Potion" groups=["ManaPotion"] instance=ExtResource("1_6j81s")]
+
+[node name="Sprite2D" parent="." index="1"]
+region_enabled = true
+region_rect = Rect2(144, 32, 16, 16)
+
+[connection signal="body_entered" from="." to="." method="ManaPotionPickedUp"]

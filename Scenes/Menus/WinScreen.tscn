@@ -1,0 +1,67 @@
+[gd_scene load_steps=5 format=3 uid="uid://bn585cdx5tpbm"]
+
+[ext_resource type="Script" path="res://Scenes/Menus/WinScreen.gd" id="1_cb6v3"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_b4u18"]
+bg_color = Color(0.52549, 0.329412, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_7k5ep"]
+font_size = 128
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cdkut"]
+bg_color = Color(1, 0.6, 0, 1)
+
+[node name="Win Screen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_cb6v3")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_b4u18")
+
+[node name="Label" type="Label" parent="Panel"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.171875
+anchor_top = 0.160833
+anchor_right = 0.828125
+anchor_bottom = 0.4525
+grow_horizontal = 2
+grow_vertical = 2
+text = "You win!"
+label_settings = SubResource("LabelSettings_7k5ep")
+horizontal_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="Play Again" type="Button" parent="Panel"]
+custom_minimum_size = Vector2(250, 100)
+layout_mode = 0
+offset_left = 236.0
+offset_top = 307.0
+offset_right = 581.0
+offset_bottom = 407.0
+theme_override_styles/normal = SubResource("StyleBoxFlat_cdkut")
+text = "Retry"
+
+[node name="Exit" type="Button" parent="Panel"]
+custom_minimum_size = Vector2(250, 100)
+layout_mode = 0
+offset_left = 238.0
+offset_top = 435.0
+offset_right = 583.0
+offset_bottom = 535.0
+theme_override_styles/normal = SubResource("StyleBoxFlat_cdkut")
+text = "Exit"
+
+[connection signal="pressed" from="Panel/Play Again" to="." method="PlayAgainPressed"]
+[connection signal="pressed" from="Panel/Exit" to="." method="_on_exit_pressed"]
