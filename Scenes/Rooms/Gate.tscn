@@ -1,0 +1,116 @@
+[gd_scene load_steps=16 format=3 uid="uid://dhgy8bxkkc35h"]
+
+[ext_resource type="Texture2D" uid="uid://bm8kiq6r2ukap" path="res://Assets/Tilesets/2D Dungeon Asset Pack_v5.2/items_animation/gate.png" id="1_jjtq1"]
+[ext_resource type="Script" path="res://Scenes/Rooms/Gate.gd" id="1_yuo8k"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wqwjt"]
+atlas = ExtResource("1_jjtq1")
+region = Rect2(64, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_o270o"]
+atlas = ExtResource("1_jjtq1")
+region = Rect2(48, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3bpg1"]
+atlas = ExtResource("1_jjtq1")
+region = Rect2(32, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_sat63"]
+atlas = ExtResource("1_jjtq1")
+region = Rect2(16, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8y7d6"]
+atlas = ExtResource("1_jjtq1")
+region = Rect2(0, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3x8mb"]
+atlas = ExtResource("1_jjtq1")
+region = Rect2(0, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rw0ob"]
+atlas = ExtResource("1_jjtq1")
+region = Rect2(16, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3jbho"]
+atlas = ExtResource("1_jjtq1")
+region = Rect2(32, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gv3xc"]
+atlas = ExtResource("1_jjtq1")
+region = Rect2(48, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4svln"]
+atlas = ExtResource("1_jjtq1")
+region = Rect2(64, 0, 16, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_bkfna"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wqwjt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_o270o")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3bpg1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_sat63")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8y7d6")
+}],
+"loop": false,
+"name": &"Close",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3x8mb")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rw0ob")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3jbho")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gv3xc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4svln")
+}],
+"loop": false,
+"name": &"Open",
+"speed": 10.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_05v4s"]
+size = Vector2(16, 32)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qvrk1"]
+size = Vector2(16, 15)
+
+[node name="Gate" type="Area2D"]
+position = Vector2(0, 8)
+script = ExtResource("1_yuo8k")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_bkfna")
+animation = &"Open"
+frame = 4
+frame_progress = 1.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_05v4s")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+position = Vector2(2, -6)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
+position = Vector2(-2, -2.5)
+shape = SubResource("RectangleShape2D_qvrk1")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="body_exited" from="." to="." method="_on_body_exited"]

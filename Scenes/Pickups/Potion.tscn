@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3 uid="uid://kc053xyxonb5"]
+
+[ext_resource type="Script" path="res://Scenes/Pickups/Potion.gd" id="1_l7x7j"]
+[ext_resource type="Texture2D" uid="uid://dcgkvmwrfbmc" path="res://Assets/Tilesets/2D Dungeon Asset Pack_v5.2/character and tileset/Dungeon_item_props_v2.png" id="2_roy83"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_oijfg"]
+radius = 6.66667
+
+[node name="Potions" type="Area2D" groups=["Pickup", "Potion"]]
+scale = Vector2(0.5, 0.5)
+collision_layer = 3
+collision_mask = 3
+script = ExtResource("1_l7x7j")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_oijfg")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_roy83")
+region_rect = Rect2(144, 48, 16, 16)

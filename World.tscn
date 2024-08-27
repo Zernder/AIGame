@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://bgeaaqjwkw5o4"]
+
+[ext_resource type="PackedScene" uid="uid://d2qb2nxmspqc5" path="res://Scenes/Rooms/FloorOne.tscn" id="2_andiy"]
+
+[node name="World" type="Node2D"]
+
+[node name="RoomOne" parent="." instance=ExtResource("2_andiy")]

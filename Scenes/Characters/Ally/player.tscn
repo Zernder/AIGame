@@ -1,0 +1,130 @@
+[gd_scene load_steps=11 format=3 uid="uid://cr05ix60wg2l6"]
+
+[ext_resource type="Texture2D" uid="uid://bfasimvh14i3l" path="res://Assets/AutumnSakilera/SpriteSheet.png" id="1_plqj8"]
+[ext_resource type="AnimationLibrary" uid="uid://ckjnmb4saog51" path="res://Assets/AutumnSakilera/AnimPlayer.res" id="2_j507a"]
+[ext_resource type="AnimationLibrary" uid="uid://dhbhcg4wost85" path="res://Assets/AutumnSakilera/global.res" id="3_3k5r7"]
+[ext_resource type="AnimationNodeStateMachine" uid="uid://dgefk6yecsrqf" path="res://Assets/AutumnSakilera/AnimTree.tres" id="4_l5vyd"]
+[ext_resource type="PackedScene" uid="uid://co6l5qpiqgaj5" path="res://Scenes/GUI/AutumnCharacterSheet.tscn" id="6_jsk1o"]
+[ext_resource type="PackedScene" uid="uid://dhdjdptk7ehtj" path="res://Scenes/GUI/TouchScreen.tscn" id="6_qaa14"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_21t8d"]
+radius = 7.5
+height = 20.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_u8hyg"]
+radius = 80.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_qncwt"]
+radius = 16.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_tfb84"]
+radius = 32.0156
+
+[node name="Player" type="CharacterBody2D" groups=["player"]]
+collision_mask = 67
+wall_min_slide_angle = 0.0
+
+[node name="Body" type="CollisionShape2D" parent="."]
+visible = false
+position = Vector2(0, 10)
+shape = SubResource("CapsuleShape2D_21t8d")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_plqj8")
+hframes = 19
+vframes = 12
+frame = 21
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"AnimPlayer": ExtResource("2_j507a"),
+"global": ExtResource("3_3k5r7")
+}
+
+[node name="AnimationTree" type="AnimationTree" parent="."]
+libraries = {
+"AnimPlayer": ExtResource("2_j507a"),
+"global": ExtResource("3_3k5r7")
+}
+tree_root = ExtResource("4_l5vyd")
+anim_player = NodePath("../AnimationPlayer")
+parameters/conditions/Combat = false
+parameters/conditions/Idle = false
+parameters/conditions/Reset = false
+parameters/conditions/VoidBolt = false
+parameters/conditions/VoidPunch = false
+parameters/conditions/Walking = false
+parameters/CombatStance/blend_position = Vector2(-0.956487, -0.943038)
+parameters/Idle/blend_position = Vector2(0.890032, 0.674603)
+parameters/Reset/blend_position = Vector2(0, 0)
+parameters/VoidBolt/blend_position = Vector2(-1.0087, 0.664557)
+parameters/VoidPunch/blend_position = Vector2(-0.36788, -1.15823)
+parameters/Walking/blend_position = Vector2(0, -0.643)
+
+[node name="Camera2D" type="Camera2D" parent="."]
+enabled = false
+zoom = Vector2(6, 6)
+
+[node name="Timers" type="Node" parent="."]
+
+[node name="StateTimeout" type="Timer" parent="Timers"]
+one_shot = true
+
+[node name="MakePath" type="Timer" parent="Timers"]
+wait_time = 0.2
+autostart = true
+
+[node name="IdleTimer" type="Timer" parent="Timers"]
+one_shot = true
+
+[node name="Regeneration" type="Timer" parent="Timers"]
+wait_time = 5.0
+autostart = true
+
+[node name="UI" type="CanvasLayer" parent="." groups=["UI"]]
+
+[node name="Character Sheet" parent="UI" node_paths=PackedStringArray("player") instance=ExtResource("6_jsk1o")]
+visible = false
+player = NodePath("../..")
+
+[node name="Touch Screen Buttons" parent="UI" node_paths=PackedStringArray("CharacterScreen") instance=ExtResource("6_qaa14")]
+CharacterScreen = NodePath("../Character Sheet")
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+path_desired_distance = 10.0
+path_max_distance = 15.0
+navigation_layers = 3
+path_postprocessing = 1
+debug_enabled = true
+
+[node name="Areas" type="Node2D" parent="."]
+
+[node name="Detectbox" type="Area2D" parent="Areas" groups=["PlayerDetectionbox"]]
+collision_layer = 64
+collision_mask = 3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Areas/Detectbox"]
+shape = SubResource("CircleShape2D_u8hyg")
+
+[node name="Hitbox" type="Area2D" parent="Areas" groups=["AllyHitbox"]]
+collision_layer = 16
+collision_mask = 32
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Areas/Hitbox"]
+position = Vector2(0, 6)
+shape = SubResource("CircleShape2D_qncwt")
+
+[node name="Hurtbox" type="Area2D" parent="Areas"]
+collision_layer = 32
+collision_mask = 16
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Areas/Hurtbox"]
+shape = SubResource("CircleShape2D_tfb84")
+
+[connection signal="timeout" from="Timers/StateTimeout" to="." method="StateMachine"]
+[connection signal="timeout" from="Timers/MakePath" to="." method="MakePath"]
+[connection signal="timeout" from="Timers/IdleTimer" to="." method="IdleTimeout"]
+[connection signal="timeout" from="Timers/Regeneration" to="." method="RegenerationTimeout"]
+[connection signal="body_entered" from="Areas/Detectbox" to="." method="EnemyDetected"]
+[connection signal="area_entered" from="Areas/Hitbox" to="." method="TakeDamage"]
+[connection signal="body_entered" from="Areas/Hurtbox" to="UI/Character Sheet" method="MeleeDamageEnemy"]

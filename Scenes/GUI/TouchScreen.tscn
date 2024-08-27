@@ -1,0 +1,144 @@
+[gd_scene load_steps=7 format=3 uid="uid://dhdjdptk7ehtj"]
+
+[ext_resource type="Script" path="res://Scenes/GUI/TouchScreen.gd" id="1_2vt10"]
+[ext_resource type="Texture2D" uid="uid://bhkmaxrd8arw1" path="res://Assets/AutumnSakilera/AutumnIcon.png" id="1_k1gnb"]
+[ext_resource type="Texture2D" uid="uid://bvg20nbrjgdf6" path="res://Assets/Tilesets/Images/GUI/inventory-slot.png" id="2_ubybu"]
+[ext_resource type="Texture2D" uid="uid://0c1ugt3y2ce8" path="res://Assets/Tilesets/Images/GUI/Countdown.png" id="3_kadle"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lcmjl"]
+draw_center = false
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0, 0, 0, 1)
+border_blend = true
+corner_radius_top_left = 30
+corner_radius_top_right = 30
+corner_radius_bottom_right = 30
+corner_radius_bottom_left = 30
+
+[sub_resource type="LabelSettings" id="LabelSettings_ckdyc"]
+font_size = 14
+
+[node name="Touch Screen Buttons" type="Control"]
+layout_mode = 3
+anchor_left = 0.82625
+anchor_right = 1.0
+anchor_bottom = 0.175
+offset_left = -3.05176e-05
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_2vt10")
+metadata/_edit_use_anchors_ = true
+
+[node name="Character Screen Button" type="Panel" parent="."]
+custom_minimum_size = Vector2(60, 100)
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -138.0
+offset_bottom = 100.0
+grow_horizontal = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_lcmjl")
+
+[node name="Button" type="Button" parent="Character Screen Button"]
+layout_mode = 0
+anchor_left = -0.00724638
+anchor_top = 0.01
+anchor_right = 1.01449
+anchor_bottom = 1.04
+offset_right = 564.0
+offset_bottom = 412.0
+scale = Vector2(0.2, 0.2)
+flat = true
+metadata/_edit_use_anchors_ = true
+
+[node name="TouchScreenButton" type="TouchScreenButton" parent="Character Screen Button"]
+position = Vector2(37, 2)
+scale = Vector2(0.2, 0.2)
+texture_normal = ExtResource("1_k1gnb")
+
+[node name="Label" type="Label" parent="Character Screen Button"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.0797101
+anchor_top = 0.69
+anchor_right = 0.92029
+anchor_bottom = 0.89
+grow_horizontal = 2
+grow_vertical = 0
+text = "Character Sheet"
+label_settings = SubResource("LabelSettings_ckdyc")
+horizontal_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="Inventory Button" type="Panel" parent="."]
+visible = false
+custom_minimum_size = Vector2(60, 100)
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -282.0
+offset_right = -144.0
+offset_bottom = 100.0
+grow_horizontal = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_lcmjl")
+
+[node name="TouchScreenButton" type="TouchScreenButton" parent="Inventory Button"]
+position = Vector2(25, 5)
+scale = Vector2(5.3125, 4.0625)
+texture_normal = ExtResource("2_ubybu")
+
+[node name="Label" type="Label" parent="Inventory Button"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.0797101
+anchor_top = 0.69
+anchor_right = 0.92029
+anchor_bottom = 0.89
+grow_horizontal = 2
+grow_vertical = 0
+text = "Items (WIP)"
+label_settings = SubResource("LabelSettings_ckdyc")
+horizontal_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="Stuck Button" type="Panel" parent="."]
+visible = false
+custom_minimum_size = Vector2(60, 100)
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -427.0
+offset_right = -289.0
+offset_bottom = 100.0
+grow_horizontal = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_lcmjl")
+
+[node name="TouchScreenButton" type="TouchScreenButton" parent="Stuck Button"]
+position = Vector2(25, 5)
+scale = Vector2(2.275, 1.55)
+texture_normal = ExtResource("3_kadle")
+
+[node name="Label" type="Label" parent="Stuck Button"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.0797101
+anchor_top = 0.69
+anchor_right = 0.92029
+anchor_bottom = 0.89
+grow_horizontal = 2
+grow_vertical = 0
+text = "Stuck!"
+label_settings = SubResource("LabelSettings_ckdyc")
+horizontal_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[connection signal="pressed" from="Character Screen Button/Button" to="." method="CharacterSheetPushed"]
+[connection signal="pressed" from="Character Screen Button/TouchScreenButton" to="." method="CharacterScreenPressed"]
+[connection signal="pressed" from="Inventory Button/TouchScreenButton" to="." method="InventoryPressed"]
+[connection signal="pressed" from="Stuck Button/TouchScreenButton" to="." method="StuckPressed"]
